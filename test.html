@@ -10,7 +10,7 @@
 
 <body>
   <h1>
-    v10
+    v11
   </h1>
   <button onclick="openCamera()">open camera</button>
   <button onclick="closeCamera()">close camera</button>
@@ -27,7 +27,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
 
 <script>
-  const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
+  const html5QrCode = '';
   
   function openCamera() {
     // 取得權限
@@ -35,6 +35,7 @@
       // devices would be an array of objects of type:
       // { id: "id", label: "label" }
       if (devices && devices.length) {
+        html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
         const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
           if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
             $("#decodedText").html(decodedText);
