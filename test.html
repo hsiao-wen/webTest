@@ -9,7 +9,9 @@
 </head>
 
 <body>
-  <h1>v6</h1>
+  <h1>
+    v7
+  </h1>
   <div id="reader" width="600px"></div>
   <p>decodedText</p>
   <p id="decodedText">123</p>
@@ -27,12 +29,21 @@
   const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
     $("#decodedText").html(decodedText);
     $("#decodedResult").html(decodedResult);
-    
+
   };
   const config = { fps: 10, qrbox: 250 };
+  // 後鏡頭?
+  html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
   
-  // If you want to prefer front camera
-  html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
+  // 前鏡頭
+  // html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
+
+  // 停止掃描
+  //html5QrCode.stop().then((ignore) => {
+  // QR Code scanning is stopped.
+  //}).catch((err) => {
+  // Stop failed, handle it.
+  //});
 
 </script>
 
