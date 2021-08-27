@@ -10,8 +10,10 @@
 
 <body>
   <h1>
-    v7
+    v8
   </h1>
+  <button onclick="openCamera()">open camera</button>
+  <button onclick="closeCamera()">close camera</button>
   <div id="reader" width="600px"></div>
   <p>decodedText</p>
   <p id="decodedText">123</p>
@@ -25,26 +27,28 @@
 <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
 
 <script>
-  const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
-  const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
-    $("#decodedText").html(decodedText);
-    $("#decodedResult").html(decodedResult);
-
+  function openCamera() {
+    const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
+      if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
+        $("#decodedText").html(decodedText);
+        $("#decodedResult").html(decodedResult);
+      } else {
+        alert("非本活動QR條碼");
+      }
+    };
+    const config = { fps: 10, qrbox: 150 };
+    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback); //後鏡頭
   };
-  const config = { fps: 10, qrbox: 250 };
-  // 後鏡頭?
-  html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+  function closeCamera() {
+    html5QrCode.stop().then((ignore) => {
+      // QR Code scanning is stopped.
+    }).catch((err) => {
+      alert(err);
+      // Stop failed, handle it.
+    });
+  }
   
-  // 前鏡頭
-  // html5QrCode.start({ facingMode: "user" }, config, qrCodeSuccessCallback);
-
-  // 停止掃描
-  //html5QrCode.stop().then((ignore) => {
-  // QR Code scanning is stopped.
-  //}).catch((err) => {
-  // Stop failed, handle it.
-  //});
-
 </script>
 
 
