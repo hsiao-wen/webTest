@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .tab {
+            display: inline-block;
+            padding: 10px 40px;
+            background-color: #888;
+            color: #666;
+        }
+
+        .tab.active {
+            background-color: #eee;
+            color: #f00;
+        }
+
+        .tabContent {
+            border: 1px solid #666;
+            padding: 20px;
+            display: none;
+        }
+
+        .tabContent.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="tabPanel">
+        <div class="tabGroup">
+            <a href="#" class="tab active">A</a>
+            <a href="#" class="tab">B</a>
+            <a href="#" class="tab">C</a>
+        </div>
+
+        <div class="tabContentGroup">
+            <div class="tabContent active">A content</div>
+            <div class="tabContent">B content</div>
+            <div class="tabContent">C content</div>
+        </div>
+    </div>
+
+
+    <script src="./jquery-3.5.1.min.js"></script>
+    <script>
+        $(document).ready(
+            function () {
+                $('.tab:nth-child(2)').click(
+                    function () {
+                        $('.tab').removeClass('active');
+                        $('.tabContent').removeClass('active');
+                        $('.tab:nth-child(2)').addClass('active');
+                        $('.tabContent:nth-child(2)').addClass('active');
+                    }
+                )
+                $('.tab:nth-child(3)').click(
+                    function () {
+                        $('.tab, .tabContent').removeClass('active');
+                        $('.tab:nth-child(3), .tabContent:nth-child(3)').addClass('active');
+                    }
+                )
+            }
+        )
+    </script>
+</body>
+
+
+</html>

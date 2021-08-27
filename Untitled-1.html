@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .amos {
+            width: 100px;
+            height: 100px;
+            background-color: #ccc;
+        }
+
+        .vivian {
+            width: 100px;
+            height: 10px;
+            background-color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="btn-open">open</button>
+    <button class="btn-close">close</button>
+    <div class="amos"></div>
+
+
+    <script src="jquery-3.5.1.min.js"></script>
+    <script>
+        $(function () {
+            $('.btn-close').click(
+                function () {
+                    $('.amos').addClass('vivian');
+                }
+            );
+        });
+        $(function () {
+            $('.btn-open').click(
+                function () {
+                    $('.amos').removeClass('vivian');
+                }
+            );
+        });
+    </script>
+
+</body>
+
+
+</html>
