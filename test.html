@@ -10,7 +10,7 @@
 
 <body>
   <h1>
-    v13
+    v14
   </h1>
   <button onclick="openCamera()">open camera</button>
   <button onclick="closeCamera()">close camera</button>
@@ -27,20 +27,13 @@
 <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
 
 <script>
-  // let html5QrCode = [];
-  
-  // const html5QrCode1 = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
-  // console.log(html5QrCode1)
-  
-  // let fackhtml5QrCode = [];
-  // fackhtml5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
-  // console.log(fackhtml5QrCode)
+  let html5QrCode = [];
   
   function openCamera() {
     // 取得權限
     Html5Qrcode.getCameras().then(devices => {
       if (devices && devices.length) {
-        let html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
+        html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
         const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
           if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
             $("#decodedText").html(decodedText);
@@ -54,7 +47,8 @@
         
       }
     }).catch(err => {
-      alert("需開啟瀏覽器相機權限");
+      alert(err + "需開啟瀏覽器相機權限");
+      window.history.go(-1); 
     });
   };
   function closeCamera() {
