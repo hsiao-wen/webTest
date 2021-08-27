@@ -6,60 +6,51 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge"  >
   <meta name="viewport" content="width=device-width, initial-scale=1.0" >
   <title>Document</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 </head>
 
 <body>
-  <h1>
-    v16
-  </h1>
-  <button onclick="openCamera()">open camera</button>
-  <button onclick="closeCamera()">close camera</button>
+  <!-- https://github.com/mebjas/html5-qrcode -->
   <div id="reader" max-width="600px"></div>
+  <div class="text-center">
+    <p>建議使用chrome或Safari瀏覽器</p>
+    <p>需開啟瀏覽器相機權限</p>
+    <button class="btn btn-outline-info" onclick="window.history.go(-1);">返回</button>
+  </div>
+  <h1>
+    v17
+  </h1>
 
 </body>
-<!-- <script src="https://raw.githubusercontent.com/mebjas/html5-qrcode/master/dist/html5-qrcode.min.js"></script> -->
+
 <script src="./JS/html5-qrcode.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
 
 <script>
-  let html5QrCode = [];
-  
-  function openCamera() {
-    // 取得權限
-    Html5Qrcode.getCameras().then(devices => {
-      if (devices && devices.length) {
-        html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
-        const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
-          if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
-            window.location.href = decodedText;
-          } else {
-            alert("非本活動QR條碼");
-          }
-        };
-        const config = { fps: 10, qrbox: 150 };
-        html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback); //後鏡頭
-        
-      }
-    }).catch(err => {
-      if(err.includes('NotAllowedError')) {
-        alert("需開啟瀏覽器相機權限");
-      } else if(err.includes('NotFoundError')) {
-        alert('無法偵測到相機');
-      } else {
-        alert("錯誤："+err);
-      }
-      window.history.go(-1); 
-    });
-  };
-  // 關閉相機，好像用不到
-  function closeCamera() {
-    html5QrCode.stop().then((ignore) => {
-      // QR Code scanning is stopped.
-    }).catch((err) => {
-      alert(err);
-    });
-  }
-  
+  // 取得權限
+  Html5Qrcode.getCameras().then(devices => {
+    if (devices && devices.length) {
+      const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
+      const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
+        if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
+          window.location.href = decodedText;
+        } else {
+          alert("非本活動QR條碼");
+        }
+      };
+      const config = { fps: 10, qrbox: 150 };
+      html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback); //後鏡頭
+    }
+  }).catch(err => {
+    if(err.includes('NotAllowedError')) {
+      alert("需開啟瀏覽器相機權限");
+    } else if(err.includes('NotFoundError')) {
+      alert('無法偵測到相機');
+    } else {
+      alert("錯誤："+err);
+    }
+    window.history.go(-1); 
+  });
 </script>
 
 
