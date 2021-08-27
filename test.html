@@ -10,17 +10,12 @@
 
 <body>
   <h1>
-    v15
+    v16
   </h1>
   <button onclick="openCamera()">open camera</button>
   <button onclick="closeCamera()">close camera</button>
-  <div id="reader" width="600px"></div>
-  <p>decodedText</p>
-  <p id="decodedText">123</p>
-  <hr>
-  <p>decodedResult</p>
-  <p id="decodedResult">123</p>
-  
+  <div id="reader" max-width="600px"></div>
+
 </body>
 <!-- <script src="https://raw.githubusercontent.com/mebjas/html5-qrcode/master/dist/html5-qrcode.min.js"></script> -->
 <script src="./JS/html5-qrcode.min.js"></script>
@@ -48,12 +43,15 @@
     }).catch(err => {
       if(err.includes('NotAllowedError')) {
         alert("需開啟瀏覽器相機權限");
+      } else if(err.includes('NotFoundError')) {
+        alert('無法偵測到相機');
       } else {
         alert("錯誤："+err);
       }
       window.history.go(-1); 
     });
   };
+  // 關閉相機，好像用不到
   function closeCamera() {
     html5QrCode.stop().then((ignore) => {
       // QR Code scanning is stopped.
