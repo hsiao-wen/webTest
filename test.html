@@ -9,16 +9,25 @@
 </head>
 
 <body>
-  <h1>v5</h1>
+  <h1>v6</h1>
   <div id="reader" width="600px"></div>
+  <p>decodedText</p>
+  <p id="decodedText">123</p>
+  <hr>
+  <p>decodedResult</p>
+  <p id="decodedResult">123</p>
   
 </body>
 <!-- <script src="https://raw.githubusercontent.com/mebjas/html5-qrcode/master/dist/html5-qrcode.min.js"></script> -->
 <script src="./JS/html5-qrcode.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+
 <script>
   const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
-  const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-      /* handle success */
+  const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
+    $("#decodedText").html(decodedText);
+    $("#decodedResult").html(decodedResult);
+    
   };
   const config = { fps: 10, qrbox: 250 };
   
