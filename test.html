@@ -10,7 +10,7 @@
 
 <body>
   <h1>
-    v8
+    v9
   </h1>
   <button onclick="openCamera()">open camera</button>
   <button onclick="closeCamera()">close camera</button>
@@ -27,8 +27,9 @@
 <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
 
 <script>
+  const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
+  
   function openCamera() {
-    const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
     const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
       if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
         $("#decodedText").html(decodedText);
@@ -45,7 +46,6 @@
       // QR Code scanning is stopped.
     }).catch((err) => {
       alert(err);
-      // Stop failed, handle it.
     });
   }
   
