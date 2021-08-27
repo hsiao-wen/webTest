@@ -10,7 +10,7 @@
 
 <body>
   <h1>
-    v9
+    v10
   </h1>
   <button onclick="openCamera()">open camera</button>
   <button onclick="closeCamera()">close camera</button>
@@ -30,16 +30,26 @@
   const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
   
   function openCamera() {
-    const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
-      if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
-        $("#decodedText").html(decodedText);
-        $("#decodedResult").html(decodedResult);
-      } else {
-        alert("非本活動QR條碼");
+    // 取得權限
+    Html5Qrcode.getCameras().then(devices => {
+      // devices would be an array of objects of type:
+      // { id: "id", label: "label" }
+      if (devices && devices.length) {
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
+          if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
+            $("#decodedText").html(decodedText);
+            $("#decodedResult").html(decodedResult);
+          } else {
+            alert("非本活動QR條碼");
+          }
+        };
+        const config = { fps: 10, qrbox: 150 };
+        html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback); //後鏡頭
+        
       }
-    };
-    const config = { fps: 10, qrbox: 150 };
-    html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback); //後鏡頭
+    }).catch(err => {
+      alert("需開啟瀏覽器相機權限");
+    });
   };
   function closeCamera() {
     html5QrCode.stop().then((ignore) => {
