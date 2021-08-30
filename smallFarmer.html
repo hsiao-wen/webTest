@@ -11,16 +11,14 @@
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.css">  
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">    
 
-    <title>Hello, world!</title>
+    <title>前端開發demo</title>
     <style>
       html, body {
-        
         width: 100%;
         position: relative;
         height: 100%;
       }
       body {
-        
         width: 100%;
         background: #eee;
         font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
@@ -31,13 +29,24 @@
       }
       .swiper-container {
         width: 100%;
-        height: 100px;
+        height: 41vw;
         overflow: hidden;
+        position: fixed;
+        bottom: 30px;
+      }
+      /* 我加的 */
+      .swiper-bg{
+        width: 100%;
+        height: 41vw;
+        position: fixed;
+        bottom: 0px;
+        border-radius: 50% 50% 0px 0px;
+        background-color: #fff;
       }
       .swiper-slide {
         text-align: center;
         font-size: 18px;
-        background: #fff;
+        /* background: #fff; */
   
         /* Center slide text vertically */
         display: -webkit-box;
@@ -53,41 +62,56 @@
         -webkit-align-items: center;
         align-items: center;
       transition: 300ms;
-      transform: scale(0.8);
+      /* 側邊縮小倍率 */
+      transform: scale(0.7);
       }
     .swiper-slide-active,.swiper-slide-duplicate-active{
         transform: scale(1);
+    }
+    /* 我加的 */
+    .swiper-slide.cardo {
+      background-image: url('./img/cardo-gray.png');
+      background-size: 100% 100%;
+    }
+    .swiper-slide-active.cardo {
+      background-image: url('./img/cardo-active.png');
+      background-size: 100% 100%;
+    }
+    .swiper-slide.farmer {
+      background-image: url('./img/farmer-gray.png');
+      background-size: 100% 100%;
+    }
+    .swiper-slide-active.farmer {
+      background-image: url('./img/farmer-active.png');
+      background-size: 100% 100%;
     }
     </style>
   </head>
   <body>
 
+    <div class="swiper-bg"></div>
     <!-- Swiper -->
-  <div class="swiper-container">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide">Slide 1</div>
-      <div class="swiper-slide">Slide 2</div>
+    <div class="swiper-container">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide cardo"></div>
+        <div class="swiper-slide farmer"></div>
+      </div>
     </div>
-    <!-- Add Pagination -->
-    <div class="swiper-pagination"></div>
-  </div>
 
     <script src="https://unpkg.com/swiper/swiper-bundle.js"> </script>  
     <script src="https://unpkg.com/swiper/swiper-bundle.min.js"> </script>
 
-    <script type="module">
-      import Swiper from 'https://unpkg.com/swiper/swiper-bundle.esm.browser.min.js'
-      const swiper = new Swiper(...)
-    </script>
+    
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-    <script>
+    <script type="module">
+      import Swiper from 'https://unpkg.com/swiper/swiper-bundle.esm.browser.min.js'
       var swiper = new Swiper('.swiper-container', {
         slidesPerView: 3,
-        spaceBetween: 30,
+        spaceBetween: 20,
       centeredSlides: true,
       loop: false,
       });
