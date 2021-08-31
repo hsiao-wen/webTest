@@ -38,7 +38,7 @@
       width: 100%;
     }
 
-    /* 我加的 */
+    /* 白色半圓形 */
     .swiper-bg {
       width: 100%;
       height: 82vw;
@@ -66,12 +66,13 @@
       -ms-flex-align: center;
       -webkit-align-items: center;
       align-items: center;
+      /* 動畫關鍵 */
       transition-property: transform, padding;
       transition-duration: 200ms;
       transition-timing-function:cubic-bezier(0.1, 0.55, 0.58, 1);
       
     }
-    /* 我加的 */
+    /* 切換圖片 */
     .swiper-slide .cardo, .swiper-slide .farmer{
       width: 60%;
       height: 60%;
@@ -95,7 +96,11 @@
 </head>
 
 <body>
-  <h1 class="text-center">v4</h1>
+  <div class="text-center">
+    <h3>v5</h3>
+    <h1>swiper範例</h1>
+    <h3>券村小農村旋轉選單</h3>
+  </div>
 
   <div class="swiper-bg"></div>
   <!-- Swiper -->
@@ -143,6 +148,7 @@
       watchSlidesProgress: true, //开启这个参数来计算每个slide的progress(进度、进程) 3 2 1 0 -1 -2 -3
       slideToClickedSlide:true, //點右邊的項目 會往右滑一格
       on: {
+        // 動畫關鍵
         setTranslate: function () {
           slides = this.slides
           for (i = 0; i < slides.length; i++) {
@@ -151,13 +157,14 @@
 
             // Math.abs 絕對值
             // Math.abs(progress) = 3 2 1 0 -1 -2 -3
-            slide.transform('translate3d(0,' + Math.abs(progress) * 12 + 'vw, 0)');
-            slide.css('padding-top' , Math.abs(progress) * 6.7 + 'vw');
+            slide.transform('translate3d(0,' + Math.abs(progress) * 12 + 'vw, 0)'); //向下位移
+            slide.css('padding-top' , Math.abs(progress) * 6.7 + 'vw'); //靠padding縮小
             slide.css('padding-bottom', Math.abs(progress) * 6.7 + 'vw');
             slide.css('padding-right', Math.abs(progress) * 5 + 'vw');
             slide.css('padding-left', Math.abs(progress) * 5 + 'vw');
           }
         },
+        // 不知道幹嘛
         setTransition: function (transition) {
           for (var i = 0; i < this.slides.length; i++) {
             var slide = this.slides.eq(i)
