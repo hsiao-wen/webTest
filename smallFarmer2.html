@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.css">  
+  <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">    
+
+  <title>前端開發demo</title>
+  <!-- Demo styles -->
+  <style>
+    body {
+      background: #eee;
+      font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #000;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .swiper-container {
+      width: 100%;
+      height: 50vw;
+      overflow: hidden;
+      position: fixed;
+      bottom: 45px;
+    }
+
+    .swiper-wrapper {
+      width: 100%;
+    }
+
+    /* 我加的 */
+    .swiper-bg {
+      width: 100%;
+      height: 82vw;
+      position: fixed;
+      bottom: -41vw;
+      border-radius: 50% 50% 0px 0px;
+      background-color: #fff;
+    }
+
+    .swiper-slide {
+      text-align: center;
+      font-size: 18px;
+      height: 42vw;
+
+      /* Center slide text vertically */
+      display: -webkit-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-box-pack: center;
+      -ms-flex-pack: center;
+      -webkit-justify-content: center;
+      justify-content: center;
+      -webkit-box-align: center;
+      -ms-flex-align: center;
+      -webkit-align-items: center;
+      align-items: center;
+      transition-property: all;
+    }
+    /* 我加的 */
+    .swiper-slide .cardo {
+      width: 60%;
+      height: 60%;
+      background-image: url('./img/cardo-gray.png');
+      background-size: 100% 100%;
+      transition: 300ms;
+    }
+
+    .swiper-slide-active .cardo {
+      width: 60%;
+      height: 60%;
+      background-image: url('./img/cardo-active.png');
+      background-size: 100% 100%;
+      transition: 300ms;
+    }
+
+    .swiper-slide .farmer {
+      width: 60%;
+      height: 60%;
+      background-image: url('./img/farmer-gray.png');
+      background-size: 100% 100%;
+      transition: 300ms;
+    }
+
+    .swiper-slide-active .farmer {
+      width: 60%;
+      height: 60%;
+      background-image: url('./img/farmer-active.png');
+      background-size: 100% 100%;
+      transition: 300ms;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="swiper-bg"></div>
+  <!-- Swiper -->
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide">
+        <div class="cardo"></div>
+      </div>
+      <div class="swiper-slide">
+        <div class="farmer"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/swiper/swiper-bundle.js"> </script>
+  <script src="https://unpkg.com/swiper/swiper-bundle.min.js"> </script>
+
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+    integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+    integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- Initialize Swiper -->
+  <script>
+    var swiper = new Swiper('.swiper-container', {
+      loop: false,
+      // speed: 2500,
+      slidesPerView: 3,
+      spaceBetween: 0,
+      centeredSlides: true,
+      watchSlidesProgress: true,
+      on: {
+        setTranslate: function () {
+          slides = this.slides
+          for (i = 0; i < slides.length; i++) {
+            slide = slides.eq(i)
+            progress = slides[i].progress
+            // Math.abs(progress) 側邊時=1 ， active時=0
+
+            slide.transform('translate3d(0,' + Math.abs(progress) * 12 + 'vw, 0)');
+            slide.css('padding', Math.abs(progress) * 5 + 'vw');
+            slide.css('padding-right', Math.abs(progress) * 5 + 'vw');
+            slide.css('padding-bottom', Math.abs(progress) * 5 + 'vw');
+            // slide.css('width', 38 - Math.abs(progress) * 12 + 'vw');
+            // slide.css('height', 54.6 - Math.abs(progress) * 16.34 + 'vw');
+
+          }
+        },
+        setTransition: function (transition) {
+          for (var i = 0; i < this.slides.length; i++) {
+            var slide = this.slides.eq(i)
+            slide.transition(transition);
+          }
+        },
+      },
+    });
+  </script>
+</body>
+
+</html>
