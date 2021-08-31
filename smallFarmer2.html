@@ -51,7 +51,7 @@
     .swiper-slide {
       text-align: center;
       font-size: 18px;
-      height: 42vw;
+      height: 45vw;
 
       /* Center slide text vertically */
       display: -webkit-box;
@@ -104,6 +104,7 @@
 </head>
 
 <body>
+  <h1 class="text-center">v2</h1>
 
   <div class="swiper-bg"></div>
   <!-- Swiper -->
@@ -144,7 +145,7 @@
   <script>
     var swiper = new Swiper('.swiper-container', {
       loop: false,
-      // speed: 2500,
+      speed: 600,
       slidesPerView: 3,
       spaceBetween: 0,
       centeredSlides: true,
@@ -158,11 +159,10 @@
             // Math.abs(progress) 側邊時=1 ， active時=0
 
             slide.transform('translate3d(0,' + Math.abs(progress) * 12 + 'vw, 0)');
-            slide.css('padding', Math.abs(progress) * 5 + 'vw');
+            slide.css('padding-top', Math.abs(progress) * 6.7 + 'vw');
+            slide.css('padding-bottom', Math.abs(progress) * 6.7 + 'vw');
             slide.css('padding-right', Math.abs(progress) * 5 + 'vw');
-            slide.css('padding-bottom', Math.abs(progress) * 5 + 'vw');
-            // slide.css('width', 38 - Math.abs(progress) * 12 + 'vw');
-            // slide.css('height', 54.6 - Math.abs(progress) * 16.34 + 'vw');
+            slide.css('padding-left', Math.abs(progress) * 5 + 'vw');
 
           }
         },
