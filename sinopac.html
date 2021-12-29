@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>測試跳轉APP</title>
+</head>
+<body>
+  <div>測試跳轉APP</div>
+  <div class="btn" >跳</div>
+  
+  <script>
+    function jump() {
+      const ticketId = Vue.prototype.CryptoJS.AES.decrypt(router.currentRoute.params.id.replace(/cardo/g, '/'), 'cardo').toString(Vue.prototype.CryptoJS.enc.Utf8);
+
+      let URL = "yfpcoupon://app?id=504&action=ticketshare";
+      let Web = 'https://cardo-web.sakilu.com/#/ticketdetail/shop/U2FsdGVkX18RWmkUsYO+zKABopLSYGuLqjz78S+PKDU=';
+
+      if (navigator.userAgent.match(/Android/)) {
+        alert('Android');
+        if (navigator.userAgent.match(/Chrome/)) {
+            // Jelly Bean with Chrome browser
+            setTimeout(function() {
+                if (!document.webkitHidden)
+                    window.location = Web;
+            }, 2000);
+            window.location = URL;
+        } else {
+            // Older Android browser
+            var iframe = document.createElement("iframe");
+            iframe.style.border = "none";
+            iframe.style.width = "1px";
+            iframe.style.height = "1px";
+            var t = setTimeout(function() {
+                window.location = Web;
+            }, 1000);
+            iframe.onload = function () { clearTimeout(t) };
+            iframe.src = URL;
+            document.body.appendChild(iframe);
+        }
+      } else if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
+        // IOS
+        alert('ios');
+        setTimeout(function() {
+          if (!document.webkitHidden){
+            window.location = Web;
+          }
+        }, 2);
+        window.location = URL;
+      } else {
+        alert('非ios/安卓');
+        window.location = Web;
+      }
+    }
+    </script>
+</body>
+</html>
