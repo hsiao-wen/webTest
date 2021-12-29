@@ -13,8 +13,6 @@
   
   <script>
     function jump() {
-      const ticketId = Vue.prototype.CryptoJS.AES.decrypt(router.currentRoute.params.id.replace(/cardo/g, '/'), 'cardo').toString(Vue.prototype.CryptoJS.enc.Utf8);
-
       let URL = "yfpcoupon://app?id=504&action=ticketshare";
       let Web = 'https://cardo-web.sakilu.com/#/ticketdetail/shop/U2FsdGVkX18RWmkUsYO+zKABopLSYGuLqjz78S+PKDU=';
 
