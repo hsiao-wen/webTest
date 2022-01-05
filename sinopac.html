@@ -14,7 +14,7 @@
   <script>
     function jump() {
       let URL = "yfpcoupon://app?id=504&action=ticketshare";
-      let Web = 'https://cardo-web.sakilu.com/#/ticketdetail/shop/U2FsdGVkX18RWmkUsYO+zKABopLSYGuLqjz78S+PKDU=';
+      let Web = 'https://hsiao-wen.github.io/webTest/';
 
       if (navigator.userAgent.match(/Android/)) {
         alert('Android');
@@ -40,7 +40,6 @@
         }
       } else if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
         // IOS
-        alert('ios');
         setTimeout(function() {
           if (!document.webkitHidden){
             window.location = Web;
@@ -48,7 +47,6 @@
         }, 2);
         window.location = URL;
       } else {
-        alert('非ios/安卓');
         window.location = Web;
       }
     }
