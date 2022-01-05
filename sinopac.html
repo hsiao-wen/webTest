@@ -39,12 +39,12 @@
             document.body.appendChild(iframe);
         }
       } else if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
-        // IOS
-        setTimeout(function() {
-          if (!document.webkitHidden){
+          // IOS
+          setTimeout(function() {
+          if (!document.webkitHidden) {
             window.location = Web;
           }
-        }, 2);
+        }, 2000);
         window.location = URL;
       } else {
         window.location = Web;
