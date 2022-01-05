@@ -9,13 +9,13 @@
 </head>
 <body>
   <div>測試跳轉APP</div>
-  <p>3秒</p>
+  <p>3秒，外網</p>
   <div class="btn btn-outline-info" onclick="jump()" >跳</div>
   
   <script>
     function jump() {
       let URL = "yfpcoupon://app?id=504&action=ticketshare";
-      let Web = 'https://hsiao-wen.github.io/webTest/';
+      let Web = 'https://family.goodluckactivity.tw/luckybag2022/index';
 
       if (navigator.userAgent.match(/Android/)) {
         alert('Android');
@@ -40,8 +40,8 @@
             document.body.appendChild(iframe);
         }
       } else if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
-          // IOS
-          setTimeout(function() {
+        // IOS
+        setTimeout(function() {
           if (!document.webkitHidden) {
             window.location = Web;
           }
