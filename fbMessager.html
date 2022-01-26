@@ -16,8 +16,8 @@
   </style>
 </head>
 <body>
-  <div class="text-center pt-2">
-  </div>
+  <div id="parent"></div>
+
   <!-- Messenger 洽談外掛程式 Code -->
   <div id="fb-root"></div>
 
@@ -31,16 +31,40 @@
   <script>
     function change2() {
       console.log('call change');
-      var chatbox = document.getElementById('fb-customer-chat');
-      chatbox.setAttribute("page_id", "276309370870035");
-      chatbox.setAttribute("attribution", "biz_inbox");
+      if (document.getElementById('fb-customer-chat')) {
+        var chatbox = document.getElementById('fb-customer-chat');
+        chatbox.setAttribute("page_id", "276309370870035");
+        chatbox.setAttribute("attribution", "biz_inbox");
+      } else {
+        var parent = document.getElementById(parent);
+        //新增 div
+        var div = document.createElement("div");
+        //設定 div 屬性，如 id
+        div.setAttribute("id", "fb-customer-chat");
+        div.setAttribute("class", "fb-customerchat");
+        div.setAttribute("page_id", "276309370870035");
+        div.setAttribute("attribution", "biz_inbox");
+        parent.appendChild(div);
+      }
       FB.XFBML.parse();
     }
     function change1() {
       console.log('call change');
-      var chatbox = document.getElementById('fb-customer-chat');
-      chatbox.setAttribute("page_id", "103020851562466");
-      chatbox.setAttribute("attribution", "biz_inbox");
+      if (document.getElementById('fb-customer-chat')) {
+        var chatbox = document.getElementById('fb-customer-chat');
+        chatbox.setAttribute("page_id", "103020851562466");
+        chatbox.setAttribute("attribution", "biz_inbox");
+      } else {
+        var parent = document.getElementById(parent);
+        //新增 div
+        var div = document.createElement("div");
+        //設定 div 屬性，如 id
+        div.setAttribute("id", "fb-customer-chat");
+        div.setAttribute("class", "fb-customerchat");
+        div.setAttribute("page_id", "103020851562466");
+        div.setAttribute("attribution", "biz_inbox");
+        parent.appendChild(div);
+      }
       FB.XFBML.parse();
     }
   </script>
