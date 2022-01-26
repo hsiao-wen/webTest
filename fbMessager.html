@@ -25,6 +25,26 @@
   <div id="fb-customer-chat" class="fb-customerchat">
   </div>
 
+  <button onclick="change2()" class="btn btn-outline-info">換成健民</button>
+  <button onclick="change1()" class="btn btn-outline-info">換成券村</button>
+
+  <script>
+    function change2() {
+      console.log('call change');
+      var chatbox = document.getElementById('fb-customer-chat');
+      chatbox.setAttribute("page_id", "276309370870035");
+      chatbox.setAttribute("attribution", "biz_inbox");
+      FB.XFBML.parse();
+    }
+    function change1() {
+      console.log('call change');
+      var chatbox = document.getElementById('fb-customer-chat');
+      chatbox.setAttribute("page_id", "103020851562466");
+      chatbox.setAttribute("attribution", "biz_inbox");
+      FB.XFBML.parse();
+    }
+  </script>
+
   <script>
     var chatbox = document.getElementById('fb-customer-chat');
     chatbox.setAttribute("page_id", "103020851562466");
