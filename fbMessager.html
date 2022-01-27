@@ -30,42 +30,69 @@
 
   <script>
     function change2() {
-      console.log('call change');
+      // 先摧毀
+      // 點太快 元件還沒跑完(fb-customer-chat還沒不見)
       if (document.getElementById('fb-customer-chat')) {
-        var chatbox = document.getElementById('fb-customer-chat');
-        chatbox.setAttribute("page_id", "108762618380739");
-        chatbox.setAttribute("attribution", "biz_inbox");
-      } else {
-        var parent = document.getElementById('parent');
-        //新增 div
-        var div = document.createElement("div");
-        //設定 div 屬性，如 id
-        div.setAttribute("id", "fb-customer-chat");
-        div.setAttribute("class", "fb-customerchat");
-        div.setAttribute("page_id", "108762618380739");
-        div.setAttribute("attribution", "biz_inbox");
-        div.setAttribute("desktop_bottom_spacing","100");
-        parent.appendChild(div);
+        document.getElementById('fb-customer-chat').remove();
       }
+      let elements = document.getElementsByClassName('fb_iframe_widget');
+      while(elements.length > 0){
+          elements[0].parentNode.removeChild(elements[0]);
+      }
+      elements = document.getElementsByClassName('fb_dialog');
+      while(elements.length > 0){
+          elements[0].parentNode.removeChild(elements[0]);
+      }
+      // 再新增
+      const fbRoot = document.getElementById('fb-root');
+      //新增 div
+      let div = document.createElement("div");
+      //設定 div 屬性
+      div.setAttribute("id", "fb-customer-chat");
+      div.setAttribute("class", "fb-customerchat");
+      div.setAttribute("page_id", "108762618380739");
+      div.setAttribute("attribution", "biz_inbox");
+      fbRoot.appendChild(div);
+      // 再次呼叫 FB
+      window.fbAsyncInit = function() {
+          FB.init({
+              xfbml            : true,
+              version          : 'v12.0'
+          });
+      };
       FB.XFBML.parse();
     }
     function change1() {
-      console.log('call change');
+      // 先摧毀
+      // 點太快 元件還沒跑完(fb-customer-chat還沒不見)
       if (document.getElementById('fb-customer-chat')) {
-        var chatbox = document.getElementById('fb-customer-chat');
-        chatbox.setAttribute("page_id", "103020851562466");
-        chatbox.setAttribute("attribution", "biz_inbox");
-      } else {
-        var parent = document.getElementById('parent');
-        //新增 div
-        var div = document.createElement("div");
-        //設定 div 屬性，如 id
-        div.setAttribute("id", "fb-customer-chat");
-        div.setAttribute("class", "fb-customerchat");
-        div.setAttribute("page_id", "103020851562466");
-        div.setAttribute("attribution", "biz_inbox");
-        parent.appendChild(div);
+        document.getElementById('fb-customer-chat').remove();
       }
+      let elements = document.getElementsByClassName('fb_iframe_widget');
+      while(elements.length > 0){
+          elements[0].parentNode.removeChild(elements[0]);
+      }
+      elements = document.getElementsByClassName('fb_dialog');
+      while(elements.length > 0){
+          elements[0].parentNode.removeChild(elements[0]);
+      }
+      // 再新增
+      const fbRoot = document.getElementById('fb-root');
+      //新增 div
+      let div = document.createElement("div");
+      //設定 div 屬性
+      div.setAttribute("id", "fb-customer-chat");
+      div.setAttribute("class", "fb-customerchat");
+      div.setAttribute("page_id", "103020851562466");
+      div.setAttribute("attribution", "biz_inbox");
+      fbRoot.appendChild(div);
+      // 再次呼叫 FB
+      window.fbAsyncInit = function() {
+          FB.init({
+              xfbml            : true,
+              version          : 'v12.0'
+          });
+      };
       FB.XFBML.parse();
     }
   </script>
