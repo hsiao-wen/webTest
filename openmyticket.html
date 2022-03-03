@@ -16,7 +16,7 @@
             if (!document.webkitHidden)
               window.location = Web;
           }, 2000);
-          window.location = URL;
+          window.location = appURL;
         } else {
           // Older Android browser
           var iframe = document.createElement("iframe");
@@ -27,7 +27,7 @@
             window.location = Web;
           }, 1000);
           iframe.onload = function () { clearTimeout(t) };
-          iframe.src = URL;
+          iframe.src = appURL;
           document.body.appendChild(iframe);
         }
       } else if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
@@ -36,7 +36,7 @@
           if (!document.webkitHidden)
             window.location = Web;
         }, 25);
-        window.location = URL;
+        window.location = appURL;
       } else {
         window.location = Web;
       }
