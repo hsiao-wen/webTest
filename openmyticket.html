@@ -1,0 +1,52 @@
+<html>
+<!-- 跳轉APP票夾 或 WEB 票夾 -->
+
+<head>
+  <meta    http-equiv="Content-Type"    content="text/html; charset=UTF-8"  />
+  <title>Share Ticket...</title>
+  <script>
+    var Web = "https://m.yfpcardo.com/#/myTicketPage";
+    var appURL = "yfpcoupon://?action=wallet";
+
+    function onLoad() {
+      if (navigator.userAgent.match(/Android/)) {
+        if (navigator.userAgent.match(/Chrome/)) {
+          // Jelly Bean with Chrome browser
+          setTimeout(function () {
+            if (!document.webkitHidden)
+              window.location = Web;
+          }, 2000);
+          window.location = URL;
+        } else {
+          // Older Android browser
+          var iframe = document.createElement("iframe");
+          iframe.style.border = "none";
+          iframe.style.width = "1px";
+          iframe.style.height = "1px";
+          var t = setTimeout(function () {
+            window.location = Web;
+          }, 1000);
+          iframe.onload = function () { clearTimeout(t) };
+          iframe.src = URL;
+          document.body.appendChild(iframe);
+        }
+      } else if (navigator.userAgent.match(/iPhone|iPad|iPod/)) {
+        // IOS
+        setTimeout(function () {
+          if (!document.webkitHidden)
+            window.location = Web;
+        }, 25);
+        window.location = URL;
+      } else {
+        window.location = Web;
+      }
+    }
+
+  </script>
+</head>
+
+<body onLoad="onLoad()">
+  <h2>Loading...</h2>
+</body>
+
+</html>
