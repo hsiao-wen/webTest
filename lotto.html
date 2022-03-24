@@ -26,14 +26,12 @@
     }
 
     h2 {
-      padding-top: 20%;
       text-align: center;
       font-size: 30px;
     }
     .containerCanvas{
       width: 100%;
       height: 300px;
-      background-color: #FFD;
       position: relative;
     }
 
@@ -41,10 +39,26 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      margin-left: -100px;
-      margin-top: -50px;
+      margin-left: -150px;
+      margin-top: -150px;
       cursor: pointer;
     }
+
+    .bottomImg{
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-left: -150px;
+      margin-top: -150px;
+      cursor: pointer;
+      background-image: url("./img/中獎-星巴克.jpg");
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: Contain;
+      width: 300px;
+      height: 300px;
+    }
+    
 
     #btn {
       margin-top: 20%;
@@ -62,24 +76,33 @@
       margin: 0 auto 10px;
     }
 
+    .box{
+      height: 800px;
+      background: linear-gradient(0deg, rgba(255,255,216,1) 9%, rgba(209,219,0,1) 100%);
+    }
+
+
   </style>
 </head>
 
 <body>
-  <h2>刮刮樂</h2>
   <div class="">
     <img src="./img/0314-五倍券-海報.jpg" alt="">
   </div>
+  <h2>刮刮樂 Demo</h2>
   <div id="containerCanvas" class="containerCanvas">
-    <canvas id="bottom"></canvas>
+    <!-- <canvas id="bottom"></canvas> -->
+    <div class="bottomImg"></div>
     <canvas id="top"></canvas>
   </div>
+  
+  <div class="py-3"></div>
 
   <div class="box"></div>
-  <div id="btn">
+  <!-- <div id="btn">
     <button onclick="next()">再來一次</button>
     <p>温馨提示：每人每天三次刮刮樂機會~</p>
-  </div>
+  </div> -->
 
 
   <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous" ></script>
@@ -87,32 +110,36 @@
     var useNumber = 0,
       luckNumber = [],
       mousedown,
-      w = 200,
-      h = 100;
-    var bottomCanvas = document.querySelector("#bottom");
+      w = 300,
+      h = 300;
+    // var bottomCanvas = document.querySelector("#bottom");
     var topCanvas = document.querySelector('#top');
-    topCanvas.width = bottomCanvas.width = w;
-    topCanvas.height = bottomCanvas.height = h;
-    // .getContext("2d") 取得渲染環境及其繪圖函數
-    var ctxBot = bottomCanvas.getContext("2d");
-    var ctxTop = topCanvas.getContext('2d');
-    bottomCanvas.style.background = "#FDD";
-    ctxBot.font = "30px 微軟雅黑";
 
-    function drawBot() {
-      //清除區域，為了點擊再來一次進行頁面重繪
-      ctxBot.clearRect(0, 0, w, h);
-      luckNumber.push(random());
-      //fillText(填充)實心數字 改為strokeText(描邊)為空心數字
-      ctxBot.strokeText(luckNumber[luckNumber.length - 1], 70, 55);
-    }
+    topCanvas.width =  w;
+    // bottomCanvas.width =  w;
+    topCanvas.height = h;
+    // bottomCanvas.height = h;
+
+    // .getContext("2d") 取得渲染環境及其繪圖函數
+    // var ctxBot = bottomCanvas.getContext("2d");
+    var ctxTop = topCanvas.getContext('2d');
+    // bottomCanvas.style.background = "#FDD";
+    // ctxBot.font = "30px 微軟雅黑";
+
+    // function drawBot() {
+    //   //清除區域，為了點擊再來一次進行頁面重繪
+    //   ctxBot.clearRect(0, 0, w, h);
+    //   luckNumber.push(random());
+    //   //fillText(填充)實心數字 改為strokeText(描邊)為空心數字
+    //   ctxBot.strokeText(luckNumber[luckNumber.length - 1], 70, 55);
+    // }
 
     //獲取1-1000隨機數
     function random() {
       return Math.ceil(Math.random() * 1000);
     }
 
-    drawBot();
+    // drawBot();
     drawTop();
 
     function drawTop() {
@@ -153,22 +180,20 @@
       ev.preventDefault();
       
       var containerCanvas = document.querySelector("#containerCanvas");
-      var bottom = document.querySelector("#bottom");
+      var top = document.querySelector("#top");
 
       if (mousedown) {
         if (ev.changedTouches) {
           ev = ev.changedTouches[ev.changedTouches.length - 1];
         }
-        // console.log( ev.pageX + " - " + this.offsetLeft);
-        // console.log( ev.pageY + " - " + this.offsetTop);
+        // console.log( "X : " + ev.pageX + " - " + top.offsetLeft);
+        // console.log( "Y : " + ev.pageY + " - " + top.offsetTop + "-" +containerCanvas.offsetTop);
+        var x = ev.pageX - top.offsetLeft;
+        var y = ev.pageY - top.offsetTop - containerCanvas.offsetTop;
         // var x = ev.pageX - this.offsetLeft;
         // var y = ev.pageY - this.offsetTop;
-        console.log( "X : " + ev.pageX + " - " + bottom.offsetLeft);
-        console.log( "Y : " + ev.pageY + " - " + bottom.offsetTop + "-" +containerCanvas.offsetTop);
-        var x = ev.pageX - bottom.offsetLeft;
-        var y = ev.pageY - bottom.offsetTop - containerCanvas.offsetTop;
         ctxTop.beginPath();
-        ctxTop.arc(x, y, 10, 0, Math.PI * 2);
+        ctxTop.arc(x, y, 20, 0, Math.PI * 2);
         ctxTop.fill();
         alertInfo();
       }
@@ -187,8 +212,8 @@
       if (n >= data.length * 0.6) {
         ctxTop.globalCompositeOperation = 'destination-over';
         ctxTop.canvas.style.opacity = 0;
-        document.querySelector("button").style.display = "block";
-        alert(luckNumber[luckNumber.length - 1]);
+        // document.querySelector("button").style.display = "block";
+        // alert("恭喜抽中 頭獎");
       }
     }
 
