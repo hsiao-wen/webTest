@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 需要 JQuery -->
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+  <title>全家 轉盤 盤子轉</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous" >
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+    img {
+      width: 100%;
+    }
+    .LuckyWheel{
+      width: 300px;
+      height: 300px;
+      margin: auto;
+      position: relative;
+    }
+    #whell{
+      transition: 3s cubic-bezier(.6,.11,.4,1.02);
+      position:absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+    .point{
+      position:absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="container p-0">
+    <div class="">
+      <img src="./img/0314-五倍券-海報.jpg" alt="">
+    </div>
+    <h2>轉盤 Demo</h2>
+
+    <div class="py-3"></div>
+
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(1)">1</button>
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(2)">2</button>
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(3)">3</button>
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(4)">4</button>
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(5)">5</button>
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(6)">6</button>
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(7)">7</button>
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(8)">8</button>
+    <button class="btn btn-sm btn-outline-info" onclick="clickbtn(0)">重製</button>
+    
+
+    <div class="LuckyWheel">
+      <img src="./img/轉盤-飲料店-2.png" id="whell">
+      <img src="./img/轉盤指針.png" class="point">
+    </div>
+    
+    <div class="">
+      <img src="./img/0314-五倍券-海報.jpg" alt="">
+    </div>
+  </div>
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous" ></script>
+  <script>
+    let rotate = 0;
+    function clickbtn(num) {
+      if(rotate!=0) {
+        rotate += 360 - rotate%360;
+      }
+      rotate += 360*3;
+      switch (num) {
+        case 1:
+          rotate+=0; 
+          break;
+        case 2:
+          rotate+=45; 
+          break;
+        case 3:
+          rotate+=90; 
+          break;
+        case 4:
+          rotate+=135; 
+          break;
+        case 5:
+          rotate+=180; 
+          break;
+        case 6:
+          rotate+=225; 
+          break;
+        case 7:
+          rotate+=270; 
+          break;
+        case 8:
+          rotate+=315; 
+          break;
+        case 0:
+          rotate=0; 
+          break;
+      }
+      document.querySelector(`#whell`).style.transform=`rotate(${rotate}deg)`;
+
+    }
+
+  </script>
+</body>
+
+</html>
