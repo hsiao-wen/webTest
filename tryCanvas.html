@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 需要 JQuery -->
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+  <title>Canvas</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous" >
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+    img {
+      width: 100%;
+    }
+    .container{
+      max-width: 840px;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="container" class="container p-0">
+    <h2 class="text-center">4張圖合一</h2>
+    <ol>
+      <li>
+        <input id="file1" type="file" accept="image/png, image/jpeg">
+      </li>
+      <li>
+        <input id="file2" type="file" accept="image/png, image/jpeg">
+      </li>
+      <li>
+        <input id="file3" type="file" accept="image/png, image/jpeg">
+      </li>
+      <li>
+        <input id="file4" type="file" accept="image/png, image/jpeg">
+      </li>
+    </ol>
+
+    <button class="btn btn-info" onclick="go()">GO</button>
+    <br>
+    <canvas id="mycanvas" style="width:200px;"></canvas>
+  </div>
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous" ></script>
+  <script>
+    var img1 = new Image();
+    var img2 = new Image();
+    var img3 = new Image();
+    var img4 = new Image();
+
+    document.getElementById('file1').onchange = function(e) {
+      let url =  URL.createObjectURL(this.files[0]);
+      img1.src = url;
+    };
+
+    document.getElementById('file2').onchange = function(e) {
+      let url =  URL.createObjectURL(this.files[0]);
+      img2.src = url;
+    };
+    
+    document.getElementById('file3').onchange = function(e) {
+      let url =  URL.createObjectURL(this.files[0]);
+      img3.src = url;
+    };
+    
+    document.getElementById('file4').onchange = function(e) {
+      let url =  URL.createObjectURL(this.files[0]);
+      img4.src = url;
+    };
+
+    function go() {
+      // 輸出圖片寬度
+      const imgwidth = 1000;
+
+      let img1h_new = 0, img2h_new = 0, img3h_new = 0, img4h_new = 0;
+
+      let img1w = img1.width;
+      let img1h = img1.height;
+      if(img1w!=0) {
+        img1h_new = imgwidth*img1h/img1w;
+      }
+      
+      let img2w = img2.width;
+      let img2h = img2.height;
+      if(img2w!=0) {
+        img2h_new = imgwidth*img2h/img2w;
+      }
+      
+      
+      let img3w = img3.width;
+      let img3h = img3.height;
+      if(img3w!=0) {
+        img3h_new = imgwidth*img3h/img3w;
+      }
+      
+      
+      let img4w = img4.width;
+      let img4h = img4.height;
+      if(img4w!=0) {
+        img4h_new = imgwidth*img4h/img4w;
+      }
+            
+      // canvas設定
+      let canvas = document.getElementById('mycanvas');
+      let ctx = canvas.getContext("2d");
+      canvas.width = imgwidth;
+      canvas.height = img1h_new + img2h_new + img3h_new + img4h_new;
+
+      // 畫圖起始高度
+      let drawStart = 0;
+      ctx.drawImage(img1, 0, 0, img1w, img1h, 0, drawStart, imgwidth, img1h_new);
+      drawStart = img1h_new;
+      ctx.drawImage(img2, 0, 0, img2w, img2h, 0, drawStart, imgwidth, img2h_new);
+      drawStart += img2h_new;
+      ctx.drawImage(img3, 0, 0, img3w, img3h, 0, drawStart, imgwidth, img3h_new);
+      drawStart += img3h_new;
+      ctx.drawImage(img4, 0, 0, img4w, img4h, 0, drawStart, imgwidth, img4h_new);
+      
+    }
+
+  </script>
+</body>
+
+</html>
