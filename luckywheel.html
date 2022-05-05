@@ -45,8 +45,9 @@
       right: 120px;
     }
     #whell{
-      transition: 7s cubic-bezier(.3,-0.06,0,1.01);
-      /* cubic-bezier(0.3,-0.06, 0, 1.11) 尾段回彈較多 */
+      transition: 8s cubic-bezier(0.12,-0.14, 0, 1.05); /* 起始較快 */
+      /* (.3,-0.06,0,1.03) 尾段回彈較少 */
+      /* (0.3,-0.06, 0, 1.11) 尾段回彈較多 */
       position:absolute;
       top: 0;
       left: 0;
@@ -95,34 +96,38 @@
   <script>
     let rotate = 0;
     function clickbtn(num) {
+      // 連續轉時，要多轉回正
       if(rotate!=0) {
         rotate += 360 - rotate%360;
       }
+      // 隨機數。若每格45度，Math.random()*XX  + YY ，XX+2*YY 要等於45
+      let randomNum = Math.floor( Math.random()*35 ) + 5;
+      // 基本轉5圈
       rotate += 360*5;
       switch (num) {
         case 1:
-          rotate+=0; 
+          rotate = rotate + randomNum + 0; 
           break;
         case 2:
-          rotate+=45; 
+          rotate = rotate + randomNum + 45; 
           break;
         case 3:
-          rotate+=90; 
+          rotate = rotate + randomNum + 90; 
           break;
         case 4:
-          rotate+=135; 
+          rotate = rotate + randomNum + 135; 
           break;
         case 5:
-          rotate+=180; 
+          rotate = rotate + randomNum + 180; 
           break;
         case 6:
-          rotate+=225; 
+          rotate = rotate + randomNum + 225; 
           break;
         case 7:
-          rotate+=270; 
+          rotate = rotate + randomNum + 270; 
           break;
         case 8:
-          rotate+=315; 
+          rotate = rotate + randomNum + 315; 
           break;
         case 0:
           rotate=0; 
