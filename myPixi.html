@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<!-- pixi js 初次嘗試 -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://pixijs.download/release/pixi.js"></script>
+  <style>
+    *{
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <h2>pixi js 初次嘗試</h2>
+  <script>
+    // 螢幕寬度
+    let containerWidth = 640;
+    if(window.innerWidth < containerWidth){
+      containerWidth = window.innerWidth;
+    }
+    
+    // 容器設定
+    let app = new PIXI.Application({ width: containerWidth, height: 360, backgroundColor: 0xDDDDDD}); 
+    document.body.appendChild(app.view);
+
+    // 遊戲狀態
+    let state = play;
+
+    let clock = 0 ;
+    // 主角的兩張圖
+    const texture0 = PIXI.Texture.from('./img/pixi/0.png'); 
+    const texture1 = PIXI.Texture.from('./img/pixi/1.png');
+
+    // 主角
+    let sprite = new PIXI.Sprite(texture0);
+    // sprite.width = 50;
+    sprite.vx = 0;
+    sprite.vy = 0;
+    sprite.interactive = true; // 可以點擊
+    sprite.buttonMode = true; // 滑鼠游標是手指
+    sprite.on('pointerdown', onClick);
+    app.stage.addChild(sprite);
+
+    // 上下按鈕
+    let btn_up = new PIXI.Sprite.from('./img/pixi/btn-up-60.png');
+    btn_up.x = 10
+    btn_up.y = 290
+    btn_up.interactive = true; // 可以點擊
+    btn_up.on('pointerdown', btnClick_up);
+    app.stage.addChild(btn_up);
+    let btn_dn = new PIXI.Sprite.from('./img/pixi/btn-dn-60.png');
+    btn_dn.x = containerWidth-70
+    btn_dn.y = 290
+    btn_dn.interactive = true; // 可以點擊
+    btn_dn.on('pointerdown', btnClick_dn);
+    app.stage.addChild(btn_dn);
+
+    // 設定按鍵反映
+    settingKey();
+    
+    // 循環1
+    app.ticker.add(delta => gameLoop(delta));
+    // 循環2
+    function gameLoop(delta){
+      state(delta);
+    }
+    // 循環3
+    function play(delta) {
+      clock += 1;
+      if(clock >= 60) {
+        clock = 0;
+      }
+      sprite.x += sprite.vx;
+      sprite.y += sprite.vy;
+
+      if (clock == 30) {
+        sprite.texture = texture1;
+      } else if (clock == 59) {
+        sprite.texture = texture0;
+      }
+    }
+    
+    // 點主角 主角就變大
+    function onClick() {
+      sprite.scale.x *= 1.25;
+      sprite.scale.y *= 1.25;
+    }
+
+    // 上下按鈕
+    function btnClick_up() {
+      sprite.vy = -3;
+      sprite.vx = 0;
+    }
+    function btnClick_dn() {
+      sprite.vy = 3;
+      sprite.vx = 0;
+    }
+
+    // 設定按鍵反映
+    function settingKey() {
+      // 方向鍵
+      let left = keyboard(37),
+        up = keyboard(38),
+        right = keyboard(39),
+        down = keyboard(40);
+
+      left.press = () => {
+        sprite.vx = -3;
+        sprite.vy = 0;
+      };
+      left.release = () => {
+        if (!right.isDown && sprite.vy === 0) {
+          sprite.vx = 0;
+        }
+      };
+
+      up.press = () => {
+        sprite.vy = -3;
+        sprite.vx = 0;
+      };
+      up.release = () => {
+        if (!down.isDown && sprite.vx === 0) {
+          sprite.vy = 0;
+        }
+      };
+
+      right.press = () => {
+        sprite.vx = 3;
+        sprite.vy = 0;
+      };
+      right.release = () => {
+        if (!left.isDown && sprite.vy === 0) {
+          sprite.vx = 0;
+        }
+      };
+
+      down.press = () => {
+        sprite.vy = 3;
+        sprite.vx = 0;
+      };
+      down.release = () => {
+        if (!up.isDown && sprite.vx === 0) {
+          sprite.vy = 0;
+        }
+      };
+    }
+
+    // 鍵盤按鍵
+    function keyboard(keyCode) {
+      let key = {};
+      key.code = keyCode;
+      key.isDown = false;
+      key.isUp = true;
+      key.press = undefined;
+      key.release = undefined;
+      //The `downHandler`
+      key.downHandler = event => {
+        if (event.keyCode === key.code) {
+          if (key.isUp && key.press) key.press();
+          key.isDown = true;
+          key.isUp = false;
+        }
+        event.preventDefault();
+      };
+    
+      //The `upHandler`
+      key.upHandler = event => {
+        if (event.keyCode === key.code) {
+          if (key.isDown && key.release) key.release();
+          key.isDown = false;
+          key.isUp = true;
+        }
+        event.preventDefault();
+      };
+    
+      //Attach event listeners
+      window.addEventListener(
+        "keydown", key.downHandler.bind(key), false
+      );
+      window.addEventListener(
+        "keyup", key.upHandler.bind(key), false
+      );
+      return key;
+    }
+  </script>
+</body>
+</html>
