@@ -17,7 +17,7 @@
     let containerHeight = 360;
     if(window.innerWidth < containerWidth){
       containerWidth = window.innerWidth;
-      containerHeight = 600;
+      containerHeight = 550;
     }
     
     // 容器設定
@@ -28,65 +28,99 @@
     let state = play;
 
     let clock = 0 ;
-    // 主角的兩張圖
-    const texture0 = PIXI.Texture.from('./img/pixi/0.png'); 
-    const texture1 = PIXI.Texture.from('./img/pixi/1.png');
+
+    // 食物圖
+    const texture_food = PIXI.Texture.from('./img/pixi/food.png');
 
     // 主角
-    let sprite = new PIXI.Sprite(texture0);
+    let alienImages = ["./img/pixi/0.png","./img/pixi/1.png","./img/pixi/2.png"];
+    let textureArray = [];
+    for (let i=0; i < alienImages.length; i++)
+    {
+        let texture = PIXI.Texture.from(alienImages[i]);
+        textureArray.push(texture);
+    };
+    let sprite = new PIXI.AnimatedSprite(textureArray);
     sprite.vx = 0;
     sprite.vy = 0;
-    sprite.interactive = true; // 可以點擊
-    sprite.buttonMode = true; // 滑鼠游標是手指
-    sprite.on('pointerdown', onClick);
+    sprite.play();
+    sprite.animationSpeed = 0.08;
     app.stage.addChild(sprite);
 
-    // 方向按鈕 上
-    let btn_up = new PIXI.Sprite.from('./img/pixi/btn-up-60.png');
-    btn_up.width = 50
-    btn_up.height = 50
-    btn_up.x = 10
-    btn_up.y = containerHeight - 120
-    btn_up.interactive = true; // 可以點擊
-    btn_up.on('touchstart', btnClick_up);
-    btn_up.on('touchend', btnClick_end);
-    btn_up.on('touchendoutside', btnClick_end);
-    app.stage.addChild(btn_up);
-    // 方向按鈕 下
-    let btn_dn = new PIXI.Sprite.from('./img/pixi/btn-dn-60.png');
-    btn_dn.width = 50
-    btn_dn.height = 50
-    btn_dn.x = 10
-    btn_dn.y = containerHeight - 60
-    btn_dn.interactive = true; // 可以點擊
-    btn_dn.on('touchstart', btnClick_dn);
-    btn_dn.on('touchend', btnClick_end);
-    btn_dn.on('touchendoutside', btnClick_end);
-    app.stage.addChild(btn_dn);
-    // 方向按鈕 左
-    let btn_lf = new PIXI.Sprite.from('./img/pixi/btn-lf-60.png');
-    btn_lf.width = 50
-    btn_lf.height = 50
-    btn_lf.x = containerWidth - 120
-    btn_lf.y = containerHeight - 80
-    btn_lf.interactive = true; // 可以點擊
-    btn_lf.on('touchstart', btnClick_lf);
-    btn_lf.on('touchend', btnClick_end);
-    btn_lf.on('touchendoutside', btnClick_end);
-    app.stage.addChild(btn_lf);
-    // 方向按鈕 右
-    let btn_rt = new PIXI.Sprite.from('./img/pixi/btn-rt-60.png');
-    btn_rt.width = 50
-    btn_rt.height = 50
-    btn_rt.x = containerWidth - 60
-    btn_rt.y = containerHeight - 80
-    btn_rt.interactive = true; // 可以點擊
-    btn_rt.on('touchstart', btnClick_rt);
-    btn_rt.on('touchend', btnClick_end);
-    btn_rt.on('touchendoutside', btnClick_end);
-    app.stage.addChild(btn_rt);
+    // 食物
+    let foods = [];
+    let foodCount = 5;
+    let yourPoint = 0;
+    for (let i=0; i < foodCount; i++) {
+      let food = new PIXI.Sprite(texture_food)
+      food.width=40
+      food.height=30
+      food.x = randomInt(60,containerWidth-food.width);
+      food.y = randomInt(60,containerHeight-food.height);
+      foods.push(food);
+      app.stage.addChild(food);
+    }
 
-    // 設定按鍵反映
+    // game over圖
+    let gameoverimg =  PIXI.Sprite.from('./img/pixi/youwin.png');
+    gameoverimg.width = 270
+    gameoverimg.height = 200
+    gameoverimg.x = (containerWidth - gameoverimg.width)/2
+    gameoverimg.y = (containerHeight - gameoverimg.height )/2
+    gameoverimg.visible = false;
+    app.stage.addChild(gameoverimg);
+
+    // 手機 方向按鈕
+    let btn_up, btn_dn, btn_lf, btn_rt;
+    setMbBtn();
+    function setMbBtn () {
+      // 方向按鈕 上
+      btn_up = new PIXI.Sprite.from('./img/pixi/btn-up-60.png');
+      btn_up.width = 50
+      btn_up.height = 50
+      btn_up.x = 10
+      btn_up.y = containerHeight - 120
+      btn_up.interactive = true; // 可以點擊
+      btn_up.on('touchstart', btnClick_up);
+      btn_up.on('touchend', btnClick_yend);
+      btn_up.on('touchendoutside', btnClick_yend);
+      app.stage.addChild(btn_up);
+      // 方向按鈕 下
+      btn_dn = new PIXI.Sprite.from('./img/pixi/btn-dn-60.png');
+      btn_dn.width = 50
+      btn_dn.height = 50
+      btn_dn.x = 10
+      btn_dn.y = containerHeight - 60
+      btn_dn.interactive = true; // 可以點擊
+      btn_dn.on('touchstart', btnClick_dn);
+      btn_dn.on('touchend', btnClick_yend);
+      btn_dn.on('touchendoutside', btnClick_yend);
+      app.stage.addChild(btn_dn);
+      // 方向按鈕 左
+      btn_lf = new PIXI.Sprite.from('./img/pixi/btn-lf-60.png');
+      btn_lf.width = 50
+      btn_lf.height = 50
+      btn_lf.x = containerWidth - 120
+      btn_lf.y = containerHeight - 80
+      btn_lf.interactive = true; // 可以點擊
+      btn_lf.on('touchstart', btnClick_lf);
+      btn_lf.on('touchend', btnClick_xend);
+      btn_lf.on('touchendoutside', btnClick_xend);
+      app.stage.addChild(btn_lf);
+      // 方向按鈕 右
+      btn_rt = new PIXI.Sprite.from('./img/pixi/btn-rt-60.png');
+      btn_rt.width = 50
+      btn_rt.height = 50
+      btn_rt.x = containerWidth - 60
+      btn_rt.y = containerHeight - 80
+      btn_rt.interactive = true; // 可以點擊
+      btn_rt.on('touchstart', btnClick_rt);
+      btn_rt.on('touchend', btnClick_xend);
+      btn_rt.on('touchendoutside', btnClick_xend);
+      app.stage.addChild(btn_rt);
+    }
+    
+    // 鍵盤 按鍵反映
     settingKey();
     
     // 循環1
@@ -97,56 +131,66 @@
     }
     // 循環3
     function play(delta) {
+      // 做一個碼表
       clock += 1;
       if(clock >= 60) {
         clock = 0;
       }
+
+      // 主角移動
       sprite.x += sprite.vx;
       sprite.y += sprite.vy;
 
-      if (clock == 30) {
-        sprite.texture = texture1;
-      } else if (clock == 59) {
-        sprite.texture = texture0;
+      // 主角 與 食物 碰撞
+      for (let i=0; i < foods.length; i++) {
+        if ( hitTestRectangle( sprite, foods[i]) ) {
+          foods[i].destroy();
+          foods.splice(i,1);
+          bigger();
+          yourPoint += 1;
+          if (yourPoint == foodCount) {
+            state = endgame;
+          }
+        }
       }
     }
-    
+    function endgame(delta) {
+      gameoverimg.visible = true;
+
+    }
     
     // 方向按鈕 上
     function btnClick_up() {
       sprite.vy = -3;
-      sprite.vx = 0;
     }
     // 方向按鈕 下
     function btnClick_dn() {
       sprite.vy = 3;
-      sprite.vx = 0;
     }
     // 方向按鈕 左
     function btnClick_lf() {
-      sprite.vy = 0;
       sprite.vx = -3;
     }
     // 方向按鈕 右
     function btnClick_rt() {
-      sprite.vy = 0;
       sprite.vx = 3;
     }
-    
-    // 方向按鈕 放開
-    function btnClick_end() {
-      sprite.vy = 0;
+    // 方向按鈕 放開 左右
+    function btnClick_xend() {
       sprite.vx = 0;
     }
+    // 方向按鈕 放開 上下
+    function btnClick_yend() {
+      sprite.vy = 0;
+    }
 
-    // 點主角 主角就變大
-    function onClick() {
+    // 主角 變大
+    function bigger() {
       sprite.scale.x *= 1.25;
       sprite.scale.y *= 1.25;
     }
 
-
-    // 設定按鍵反映
+    // 鍵盤 按鍵反映
     function settingKey() {
       // 方向鍵
       let left = keyboard(37),
@@ -156,42 +200,30 @@
 
       left.press = () => {
         sprite.vx = -3;
-        sprite.vy = 0;
       };
       left.release = () => {
-        if (!right.isDown && sprite.vy === 0) {
-          sprite.vx = 0;
-        }
+        sprite.vx = 0;
       };
 
       up.press = () => {
         sprite.vy = -3;
-        sprite.vx = 0;
       };
       up.release = () => {
-        if (!down.isDown && sprite.vx === 0) {
-          sprite.vy = 0;
-        }
+        sprite.vy = 0;
       };
 
       right.press = () => {
         sprite.vx = 3;
-        sprite.vy = 0;
       };
       right.release = () => {
-        if (!left.isDown && sprite.vy === 0) {
-          sprite.vx = 0;
-        }
+        sprite.vx = 0;
       };
 
       down.press = () => {
         sprite.vy = 3;
-        sprite.vx = 0;
       };
       down.release = () => {
-        if (!up.isDown && sprite.vx === 0) {
-          sprite.vy = 0;
-        }
+        sprite.vy = 0;
       };
     }
 
@@ -231,6 +263,46 @@
         "keyup", key.upHandler.bind(key), false
       );
       return key;
+    }
+  
+    // 碰撞
+    function hitTestRectangle(r1, r2) {
+      let hit, combinedHalfWidths, combinedHalfHeights, vx, vy;
+
+      hit = false;
+
+      r1.centerX = r1.x + r1.width / 2;
+      r1.centerY = r1.y + r1.height / 2;
+      r2.centerX = r2.x + r2.width / 2;
+      r2.centerY = r2.y + r2.height / 2;
+
+      r1.halfWidth = r1.width / 2;
+      r1.halfHeight = r1.height / 2;
+      r2.halfWidth = r2.width / 2;
+      r2.halfHeight = r2.height / 2;
+
+      vx = r1.centerX - r2.centerX;
+      vy = r1.centerY - r2.centerY;
+
+      combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+      combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+      if (Math.abs(vx) < combinedHalfWidths) {
+      
+        if (Math.abs(vy) < combinedHalfHeights) {
+          hit = true;
+        } else {
+          hit = false;
+        }
+      } else {
+        hit = false;
+      }
+      return hit;
+    };
+  
+    // 隨機整數
+    function randomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
     }
   </script>
 </body>
