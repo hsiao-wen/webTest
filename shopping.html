@@ -10,7 +10,11 @@
 <body>
   <div id="app" class="container mt-3">
     <h2>購物計算機</h2>
-    <div class="form-floating">
+    <div class="form-floating my-3">
+      <input v-model="inputname" type="text" class="form-control" id="inputname" placeholder="品項">
+      <label for="inputname">品項</label>
+    </div>
+    <div class="form-floating my-3">
       <input v-model="inputmoney" type="text" inputmode="decimal" class="form-control" id="inputmoney" placeholder="價錢">
       <label for="inputmoney">價錢</label>
     </div>
@@ -27,14 +31,16 @@
       <thead>
         <tr>
           <th scope="col">#</th>
+          <th scope="col">品項</th>
           <th scope="col">價錢</th>
-          <th scope="col">重量,容量</th>
+          <th scope="col">重/容量</th>
           <th scope="col">每單位$</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="(item,idx) in history" :key="idx">
           <th scope="row">{{idx}}</th>
+          <td>{{item.name}}</td>
           <td>{{item.money}}</td>
           <td>{{item.g}}</td>
           <td>{{item.cp}}</td>
@@ -51,6 +57,7 @@
     var app = new Vue({
       el: '#app',
       data: {
+        inputname: '',
         inputmoney: '',
         inputg: '',
         history: [],
@@ -58,11 +65,13 @@
       methods: {
         count() {
           let x = {
+            name: this.inputname,
             money: this.inputmoney,
             g: this.inputg,
             cp: Math.round(this.inputmoney*100/this.inputg)/100,
           }
           this.history.push(x);
+          this.inputname = '';
           this.inputmoney = '';
           this.inputg = '';
         }
