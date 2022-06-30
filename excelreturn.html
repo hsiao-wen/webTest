@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <!-- VUE 加入 -->
+  <script src="https://unpkg.com/vue@next"></script>
+  <title>Excel格式轉換</title>
+  <style>
+    textarea{
+      height: 400px;
+      width: 100%;
+    }
+    img{
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="myapp" class="container">
+    <div class="row">
+      <h3 class="col-12 text-center">excel格式轉換</h3>
+      <div class="col-6">
+        <img src="./img/excel反樞紐-說明圖.jpg" class="mx-auto">
+      </div>
+      <div class="col-6">
+        <ol class="pt-5">
+          <li>功能參考左圖</li>
+          <li>先複製原始資料，貼到左側</li>
+          <li>點擊 轉換</li>
+          <li>看到右側有資料了</li>
+          <li>點擊 複製結果</li>
+          <li>在excel檔案中 貼上</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="row align-items-center">
+      <div class="col-6 d-flex flex-column">
+        <button @click="go()" class="btn btn-info m-2">轉換</button>
+        <textarea v-model="intxt" placeholder="貼上原始資料"></textarea>
+      </div>
+      <div class="col-6 d-flex flex-column">
+        <button @click="copyouttxt()" class="btn btn-info m-2" :disabled="outtxt==''">複製結果</button>
+        <textarea v-model="outtxt" id="outtxt" placeholder="輸出結果" readonly disabled></textarea>
+      </div>
+
+    </div>
+
+
+  </div>
+
+  <script>
+    const myapp = {
+      data() {
+        return {
+          intxt: '',
+          outtxt: '',
+        }
+      },
+      mounted() {
+      },
+      methods: {
+        go() {
+          this.outtxt = '';
+          let n = this.intxt.split('\n');
+          let regex = /\D/; // 正規表示:不是純數字 為 true
+          n.forEach(element => {
+            let m = element.split('\t');
+            if ( !regex.test(m[1]) ) {
+              for (var i = 0; i < parseInt(m[1],10); i++) {
+                this.outtxt = this.outtxt + '\n' + m[0];
+              }
+            }
+          });
+        },
+        copyouttxt() {
+          navigator.clipboard.writeText(this.outtxt)
+        }
+      },
+    }
+    Vue.createApp(myapp).mount('#myapp')
+  </script>
+</body>
+</html>
