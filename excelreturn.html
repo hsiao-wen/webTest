@@ -21,7 +21,7 @@
 <body>
   <div id="myapp" class="container">
     <div class="row">
-      <h3 class="col-12 text-center">excel格式轉換</h3>
+      <h3 class="col-12 text-center">批次轉贈excel格式轉換</h3>
       <div class="col-6">
         <img src="./img/excel反樞紐-說明圖.jpg" class="mx-auto">
       </div>
@@ -30,9 +30,8 @@
           <li>功能參考左圖</li>
           <li>先複製原始資料，貼到左側</li>
           <li>點擊 轉換</li>
-          <li>看到右側有資料了</li>
-          <li>點擊 複製結果</li>
-          <li>在excel檔案中 貼上</li>
+          <li>看到右側有資料了，點擊 複製結果</li>
+          <li>在excel檔案中 貼上<br><span class="text-secondary">( 儲存格格式要是「文字」手機號碼才不會跑掉 )</span></li>
         </ol>
       </div>
     </div>
@@ -64,14 +63,18 @@
       },
       methods: {
         go() {
-          this.outtxt = '';
+          this.outtxt = '手機號碼\t發送簡訊';
           let n = this.intxt.split('\n');
           let regex = /\D/; // 正規表示:不是純數字 為 true
           n.forEach(element => {
             let m = element.split('\t');
             if ( !regex.test(m[1]) ) {
               for (var i = 0; i < parseInt(m[1],10); i++) {
-                this.outtxt = this.outtxt + '\n' + m[0];
+                if (i == 0) {
+                  this.outtxt = this.outtxt + '\n' + m[0] + '\t是';
+                } else {
+                  this.outtxt = this.outtxt + '\n' + m[0] + '\t否';
+                }
               }
             }
           });
