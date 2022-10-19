@@ -9,11 +9,20 @@
   <script src="https://unpkg.com/vue@next"></script>
   <title>券村UTM設定</title>
   <style>
+    .bg-lightblue{
+      background-color: rgb(234, 247, 255);
+    }
   </style>
 </head>
 <body>
   <div id="myapp" class="container mt-3">
-    <h1>券村UTM設定工具</h1>
+    <h1 class="mb-3">券村UTM設定工具</h1>
+    
+    <div class="form-group">
+      <label for="firstURL" class="text-primary"><b>原本URL</b></label>
+      <input v-model="firstURL" type="text" class="form-control bg-lightblue" id="firstURL">
+    </div>
+
     <div class="form-group">
       <label for="pipeline">管道</label>
       <select v-model="pipeline" class="form-control" id="pipeline" >
@@ -26,22 +35,24 @@
     <div class="form-group">
       <label for="medium">媒介</label>
       <input v-model="medium" type="text" class="form-control" id="medium" :disabled="pipeline=='facebook' || pipeline=='referral' || pipeline=='paidAds' ">
-      <p v-if="medium!='' && (/\W/.test(medium) || /\s/.test(medium))" class="text-danger">英文數字，不可有空格</p>
+      <p v-if="medium!='' && /\W/.test(medium)" class="text-danger">英文數字，不可有空格</p>
     </div>
     <div class="form-group">
       <label for="source">來源
       </label>
       <input v-model="source" type="text" class="form-control" id="source" :disabled="pipeline=='facebook'">
-      <p v-if="source!='' && (/\W/.test(source) || /\s/.test(source))" class="text-danger">英文數字，不可有空格</p>
+      <p v-if="source!='' && /\W/.test(source)" class="text-danger">英文數字，不可有空格</p>
     </div>
     <div class="form-group">
       <label for="campaign">廣告活動</label>
       <input v-model="campaign" type="text" class="form-control" id="campaign">
-      <p v-if="campaign!='' && (/\W/.test(campaign) || /\s/.test(campaign))" class="text-danger">英文數字，不可有空格</p>
+      <p v-if="campaign!='' && /\W/.test(campaign)" class="text-danger">英文數字，不可有空格</p>
     </div>
     <div class="form-group">
-      <label for="firstURL">原本URL</label>
-      <input v-model="firstURL" type="text" class="form-control" id="firstURL">
+      <label for="utm_term">utm_term</label>
+      <span class="ml-2">(選填)</span>
+      <input v-model="utm_term" type="text" class="form-control" id="utm_term">
+      <p v-if="utm_term!='' && /\W/.test(utm_term)" class="text-danger">英文數字，不可有空格</p>
     </div>
     
     <button @click="go()" class="btn btn-info my-2">產生連結</button>
@@ -62,6 +73,7 @@
           campaign: '',
           firstURL: '',
           newURL: '',
+          utm_term: '',
         }
       },
       watch: {
@@ -88,19 +100,27 @@
             alert('請輸入 原本URL');
             return
           }
-          if(this.medium=='' || /\W/.test(this.medium) || /\s/.test(this.medium)) {
-            alert('媒介 必填，只能英數，不可空白');
+          if(this.medium=='' || /\W/.test(this.medium)) {
+            alert('媒介 必填，只能英數，不可空格');
             return
           }
-          if(this.source=='' || /\W/.test(this.source) || /\s/.test(this.source)) {
-            alert('來源  必填，只能英數，不可空白');
+          if(this.source=='' || /\W/.test(this.source)) {
+            alert('來源  必填，只能英數，不可空格');
             return
           }
-          if(this.campaign=='' || /\W/.test(this.campaign) || /\s/.test(this.campaign)) {
-            alert('廣告活動 必填，只能英數，不可空白');
+          if(this.campaign=='' || /\W/.test(this.campaign)) {
+            alert('廣告活動 必填，只能英數，不可空格');
             return
           }
-          this.newURL = `${this.firstURL}?utm_medium=${this.medium}&utm_source=${this.source}&utm_campaign=${this.campaign}`;
+          let newURL = `${this.firstURL}?utm_medium=${this.medium}&utm_source=${this.source}&utm_campaign=${this.campaign}`;
+          if(this.utm_term != '') {
+            if(/\W/.test(this.utm_term)) {
+              alert('utm_term 只能英數，不可空格');
+              return
+            }
+            newURL = `${newURL}&utm_term=${this.utm_term}`
+          }
+          this.newURL = newURL;
         },
         copy() {
           navigator.clipboard.writeText(this.newURL)
