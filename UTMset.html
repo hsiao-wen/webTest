@@ -112,7 +112,14 @@
             alert('廣告活動 必填，只能英數，不可空格');
             return
           }
-          let newURL = `${this.firstURL}?utm_medium=${this.medium}&utm_source=${this.source}&utm_campaign=${this.campaign}`;
+          let newURL = '';
+
+          if(/\?/.test(this.firstURL)) {
+            newURL = `${this.firstURL}&utm_medium=${this.medium}&utm_source=${this.source}&utm_campaign=${this.campaign}`;
+          } else {
+            newURL = `${this.firstURL}?utm_medium=${this.medium}&utm_source=${this.source}&utm_campaign=${this.campaign}`;
+          }
+
           if(this.utm_term != '') {
             if(/\W/.test(this.utm_term)) {
               alert('utm_term 只能英數，不可空格');
