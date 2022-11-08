@@ -11,13 +11,16 @@
 
 <body>
   <!-- https://github.com/mebjas/html5-qrcode -->
-  <div id="reader" max-width="600px"></div>
+  <div id="reader" max-width="400px" style="max-width:400px"></div>
   <div class="text-center">
     <p>建議使用 chrome 或 Safari 瀏覽器</p>
     <button class="btn btn-outline-info" onclick="window.history.go(-1);">返回</button>
     <h1>
       v18
     </h1>
+    <div class="p-3">
+      <input id="qrtext" type="text" class="form-control">
+    </div>
   </div>
 
 </body>
@@ -29,13 +32,34 @@
   // 取得權限
   Html5Qrcode.getCameras().then(devices => {
     if (devices && devices.length) {
-      const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ] });
+      // 支援條碼類型
+      const formatsToSupport = [
+        Html5QrcodeSupportedFormats.QR_CODE,
+        Html5QrcodeSupportedFormats.AZTEC,
+        Html5QrcodeSupportedFormats.CODABAR,
+        Html5QrcodeSupportedFormats.CODE_39,
+        Html5QrcodeSupportedFormats.CODE_93,
+        Html5QrcodeSupportedFormats.CODE_128,
+        Html5QrcodeSupportedFormats.DATA_MATRIX,
+        Html5QrcodeSupportedFormats.MAXICODE,
+        Html5QrcodeSupportedFormats.ITF,
+        Html5QrcodeSupportedFormats.EAN_13,
+        Html5QrcodeSupportedFormats.EAN_8,
+        Html5QrcodeSupportedFormats.PDF_417,
+        Html5QrcodeSupportedFormats.RSS_14,
+        Html5QrcodeSupportedFormats.RSS_EXPANDED,
+        Html5QrcodeSupportedFormats.UPC_A,
+        Html5QrcodeSupportedFormats.UPC_E,
+        Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+      ];
+      const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: formatsToSupport });
       const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
-        if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
-          window.location.href = decodedText;
-        } else {
-          alert("非本活動QR條碼");
-        }
+        $("#qrtext").val(decodedText);
+        // if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
+        //   $("#qrtext").val(decodedText);
+        // } else {
+        //   alert("非本活動QR條碼");
+        // }
       };
       const config = { fps: 10, qrbox: 150 };
       html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback); //後鏡頭
