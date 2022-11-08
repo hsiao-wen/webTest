@@ -3,81 +3,140 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"  >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <meta name="viewport" content="width=device-width, initial-scale=1.0" >
   <title>前端開發demo</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+    integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+    crossorigin="anonymous"
+  >
 </head>
 
 <body>
-  <!-- https://github.com/mebjas/html5-qrcode -->
-  <div id="reader" max-width="400px" style="max-width:400px"></div>
+  <!-- 元件來源 https://github.com/mebjas/html5-qrcode -->
+  <!-- 記得看有沒有新版本 -->
+
+  <!-- 掃描區域元件 -->
+  <div 
+    id="reader" 
+    style="max-width:400px;"
+    class="m-auto">
+  </div>
+
+  <div class="p-3">
+    <input id="qrtext" type="text" class="form-control" >
+  </div>
+
   <div class="text-center">
+    <button
+      class="btn btn-outline-info m-auto"
+      onclick="restart()"
+    >重新掃描</button>
     <p>建議使用 chrome 或 Safari 瀏覽器</p>
-    <button class="btn btn-outline-info" onclick="window.history.go(-1);">返回</button>
-    <h1>
-      v18
-    </h1>
-    <div class="p-3">
-      <input id="qrtext" type="text" class="form-control">
-    </div>
+    <button
+      class="btn btn-outline-info"
+      onclick="window.history.go(-1);"
+    >返回</button>
+    <h3>
+      2022-11-08 16:08
+    </h3>
   </div>
 
 </body>
 
 <script src="./JS/html5-qrcode.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous"></script>
+<script
+  src="https://code.jquery.com/jquery-3.6.0.slim.js"
+  integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY="
+  crossorigin="anonymous"
+></script>
+<!-- <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script> -->
 
 <script>
-  // 取得權限
-  Html5Qrcode.getCameras().then(devices => {
+  function restart() {
+    // 取得相機權 限
+    Html5Qrcode.getCameras().then(devices => {
+
+    // 有取得裝置
     if (devices && devices.length) {
-      // 支援條碼類型
+
+      // 支援條碼類型 盡量少
       const formatsToSupport = [
         Html5QrcodeSupportedFormats.QR_CODE,
-        Html5QrcodeSupportedFormats.AZTEC,
-        Html5QrcodeSupportedFormats.CODABAR,
+        // Html5QrcodeSupportedFormats.AZTEC,
+        // Html5QrcodeSupportedFormats.CODABAR,
         Html5QrcodeSupportedFormats.CODE_39,
         Html5QrcodeSupportedFormats.CODE_93,
         Html5QrcodeSupportedFormats.CODE_128,
-        Html5QrcodeSupportedFormats.DATA_MATRIX,
-        Html5QrcodeSupportedFormats.MAXICODE,
-        Html5QrcodeSupportedFormats.ITF,
-        Html5QrcodeSupportedFormats.EAN_13,
-        Html5QrcodeSupportedFormats.EAN_8,
-        Html5QrcodeSupportedFormats.PDF_417,
-        Html5QrcodeSupportedFormats.RSS_14,
-        Html5QrcodeSupportedFormats.RSS_EXPANDED,
-        Html5QrcodeSupportedFormats.UPC_A,
-        Html5QrcodeSupportedFormats.UPC_E,
-        Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
+        // Html5QrcodeSupportedFormats.DATA_MATRIX,
+        // Html5QrcodeSupportedFormats.MAXICODE,
+        // Html5QrcodeSupportedFormats.ITF,
+        // Html5QrcodeSupportedFormats.EAN_13,
+        // Html5QrcodeSupportedFormats.EAN_8,
+        // Html5QrcodeSupportedFormats.PDF_417,
+        // Html5QrcodeSupportedFormats.RSS_14,
+        // Html5QrcodeSupportedFormats.RSS_EXPANDED,
+        // Html5QrcodeSupportedFormats.UPC_A,
+        // Html5QrcodeSupportedFormats.UPC_E,
+        // Html5QrcodeSupportedFormats.UPC_EAN_EXTENSION,
       ];
-      const html5QrCode = new Html5Qrcode( "reader", { formatsToSupport: formatsToSupport });
-      const qrCodeSuccessCallback = (decodedText, decodedResult) => { 
+
+      // 新建元件，綁定 <div id="reader"> ，Html5Qrcode("元件ID",是否將結果打印製console-否就好)
+      const html5QrCode = new Html5Qrcode("reader");
+
+      // 掃描到東西 執行
+      const qrCodeSuccessCallback = (decodedText, decodedResult) => {
         $("#qrtext").val(decodedText);
+        stop();
+        // 判斷條碼是不是我們家的
         // if (decodedText.includes("https://family.goodluckactivity.tw/SmartShoppingCard202108")) {
         //   $("#qrtext").val(decodedText);
         // } else {
         //   alert("非本活動QR條碼");
         // }
       };
-      const config = { fps: 10, qrbox: 150 };
-      html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback); //後鏡頭
+
+      // 元件設定
+      const config = {
+        fps: 10,
+        qrbox: { width: 300, height: 100 }, // 遮罩範圍
+        // aspectRatio: 1.33, // 全部範圍寬高比 16:9 = 1.77, 4:3 = 1.33, 1:1 = 1
+        supportedScanTypes: formatsToSupport
+      };
+      // html5QrCode.start(相機ID,設定值,掃描成功執行,錯誤時執行)
+      // html5QrCode.start({ facingMode: "user" }...) 前鏡頭
+      // html5QrCode.start({ facingMode: "environment"....} 後鏡頭
+      html5QrCode.start({ facingMode: "environment" }, config, qrCodeSuccessCallback);
+
+      // 停止掃描
+      function stop() { 
+          html5QrCode.stop().then((ignore) => {
+          console.log("停止掃描");
+        }).catch((err) => {
+          // Stop failed, handle it.
+        });
+      }
     }
-  }).catch(err => {
-    if(err.includes('NotAllowedError')) {
+    }).catch(err => {
+    if (err.includes('NotAllowedError')) {
       alert("需開啟瀏覽器相機權限");
-    } else if(err.includes('NotFoundError')) {
+    } else if (err.includes('NotFoundError')) {
       alert('無法偵測到相機');
     } else {
-      alert("錯誤："+err);
+      alert("錯誤：" + err);
     }
-    window.history.go(-1); 
-  });
+    window.history.go(-1);
+    });
+  }
+
+  restart();
+
 </script>
 
 <style>
-  p{
+  p {
     margin: 0;
   }
 </style>
