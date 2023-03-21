@@ -8,7 +8,7 @@
 	<script src="https://unpkg.com/vue@next"></script>
   <!-- bootStrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
-  <title>Document</title>
+  <title>Pension Demo</title>
   <style>
     body{
       font-size: 14px;
@@ -89,54 +89,54 @@
 		const app = Vue.createApp({
 			setup() {
 				const showbox = Vue.ref(0);
-        const data = Vue.ref([
-          { 
-            "ppa_No": "98765",
-            "pensioner_Name": "Maung Nyein Su",
-            "ministry_Mm_Name": "Myanmar language department",
-            "department_Name": "Municipality Administration",
-            "position_Name": "Chef",
-            "start_Pension_Date": "01/01/2022",
-            "type_Name": "Monthly pension",
-            "pension_Amount": "500,000 MMK",
-            "graduity_Amount": "20,000,000 MMK",
-            "apply_Date": "01/12/2021",
-            "pensioner_Address": "Yangon, Myanmar",
-            "department_Letter_In_Date": "01/10/2021",
-            "department_Letter_In_No": "123/Serial No.",
-            "department_Letter_Out_Date": "01/11/2021",
-            "department_Letter_Out_No": "456/Serial No.",
-            "last_Drawn_Salary": "1,000,000 MMK",
-            "distinguished_Mark": "Tattoo on shoulder",
-            "height": "5 feet 7 inches",
-            "birth_Date": "01/01/1960",
-            "race": "Karen",
-            "religion": "Buddhist",
-            "father_Name": "Kyaw Kyaw",
-            "bank_Name": "Sein Ta Lone Bank, Mandalay Branch"
-          },
-          {
-            "gender": "Male",
-            "mother_Name": "Khin Khin Nyein",
-            "nrc": "12/ABC(N)123456",
-            "admin_Letter_No": "789/Serial No.",
-            "financial_Year": "2021-2022",
-            "start_Posting_Date": "01/01/1985",
-            "expire_Penssion_Date": "31/12/2035",
-            "service_Years": "30",
-            "salary_Description": "Basic salary with allowances",
-            "medical_Grade": "Grade A+",
-            "pension_Group_Name": "Group A",
-            "relation_Name": "Son",
-          },
-          {
-            "original_Pensioner_Name": "U Maung Maung Nyein Nyein Su",
-            "original_Expire_Date": "31/12/2035",
-            "original_Nrc": "12/ABC(N)123456",
-            "original_Father_Name": "U Kyaw Kyaw",
-            "original_Birth_Date": "01/01/1960"
-          }
+        const data = Vue.ref([{
+"ppa_No": "13579",
+"pensioner_Name": "Liu Mei",
+"ministry_Mm_Name": "Ministry of Education",
+"department_Name": "Elementary School",
+"position_Name": "Teacher",
+"start_Pension_Date": "01/01/2022",
+"type_Name": "Retirement pension",
+"pension_Amount": "8,000 CNY",
+"graduity_Amount": "200,000 CNY",
+"apply_Date": "01/12/2021",
+"pensioner_Address": "Beijing, China",
+"department_Letter_In_Date": "01/10/2021",
+"department_Letter_In_No": "123/Serial No.",
+"department_Letter_Out_Date": "01/11/2021",
+"department_Letter_Out_No": "456/Serial No.",
+"last_Drawn_Salary": "15,000 CNY",
+"distinguished_Mark": "Birthmark on forehead",
+"height": "5 feet 4 inches",
+"birth_Date": "08/05/1960",
+"race": "Han Chinese",
+"religion": "Buddhist",
+"father_Name": "Liu Xiang",
+"bank_Name": "Industrial and Commercial Bank of China, Beijing Branch"
+},
+{
+"gender": "Female",
+"mother_Name": "Wang Li",
+"nrc": "123456789012345678",
+"admin_Letter_No": "789/Serial No.",
+"financial_Year": "2021-2022",
+"start_Posting_Date": "01/01/1985",
+"expire_Penssion_Date": "31/12/2025",
+"service_Years": "40",
+"salary_Description": "Basic salary with bonuses",
+"medical_Grade": "Grade B",
+"pension_Group_Name": "Group A",
+"relation_Name": "Daughter"
+},
+{
+"original_Pensioner_Name": "Liu Mei",
+"original_Expire_Date": "31/12/2025",
+"original_Nrc": "123456789012345678",
+"original_Father_Name": "Liu Xiang",
+"original_Birth_Date": "08/05/1960"
+}
         ]);
+
 
 				return {
 					showbox,
@@ -159,6 +159,13 @@
 						center: {lat: position.coords.latitude, lng: position.coords.longitude},
 						zoom: 14
 					});
+          var marker = new google.maps.Marker({
+            position: {
+              lat: position.coords.latitude, lng: position.coords.longitude
+            }, 
+            map: map,
+            draggable: true,
+          });
 				});
 			} else {
 				alert("Geolocation is not supported by this browser.");

@@ -8,7 +8,7 @@
 	<script src="https://unpkg.com/vue@next"></script>
   <!-- bootStrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
-  <title>Document</title>
+  <title>Pension Demo</title>
   <style>
     body{
       font-size: 14px;
@@ -160,6 +160,13 @@
 						center: {lat: position.coords.latitude, lng: position.coords.longitude},
 						zoom: 14
 					});
+          var marker = new google.maps.Marker({
+            position: {
+              lat: position.coords.latitude, lng: position.coords.longitude
+            }, 
+            map: map,
+            draggable: true,
+          });
 				});
 			} else {
 				alert("Geolocation is not supported by this browser.");

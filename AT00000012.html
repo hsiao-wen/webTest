@@ -8,7 +8,7 @@
 	<script src="https://unpkg.com/vue@next"></script>
   <!-- bootStrap -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
-  <title>Document</title>
+  <title>Pension Demo</title>
   <style>
     body{
       font-size: 14px;
@@ -89,54 +89,54 @@
 		const app = Vue.createApp({
 			setup() {
 				const showbox = Vue.ref(0);
-        const data = Vue.ref([
-          { 
-            "ppa_No": "98765",
-            "pensioner_Name": "Maung Nyein Su",
-            "ministry_Mm_Name": "Myanmar language department",
-            "department_Name": "Municipality Administration",
-            "position_Name": "Chef",
-            "start_Pension_Date": "01/01/2022",
-            "type_Name": "Monthly pension",
-            "pension_Amount": "500,000 MMK",
-            "graduity_Amount": "20,000,000 MMK",
-            "apply_Date": "01/12/2021",
-            "pensioner_Address": "Yangon, Myanmar",
-            "department_Letter_In_Date": "01/10/2021",
-            "department_Letter_In_No": "123/Serial No.",
-            "department_Letter_Out_Date": "01/11/2021",
-            "department_Letter_Out_No": "456/Serial No.",
-            "last_Drawn_Salary": "1,000,000 MMK",
-            "distinguished_Mark": "Tattoo on shoulder",
-            "height": "5 feet 7 inches",
-            "birth_Date": "01/01/1960",
-            "race": "Karen",
-            "religion": "Buddhist",
-            "father_Name": "Kyaw Kyaw",
-            "bank_Name": "Sein Ta Lone Bank, Mandalay Branch"
-          },
-          {
-            "gender": "Male",
-            "mother_Name": "Khin Khin Nyein",
-            "nrc": "12/ABC(N)123456",
-            "admin_Letter_No": "789/Serial No.",
-            "financial_Year": "2021-2022",
-            "start_Posting_Date": "01/01/1985",
-            "expire_Penssion_Date": "31/12/2035",
-            "service_Years": "30",
-            "salary_Description": "Basic salary with allowances",
-            "medical_Grade": "Grade A+",
-            "pension_Group_Name": "Group A",
-            "relation_Name": "Son",
-          },
-          {
-            "original_Pensioner_Name": "U Maung Maung Nyein Nyein Su",
-            "original_Expire_Date": "31/12/2035",
-            "original_Nrc": "12/ABC(N)123456",
-            "original_Father_Name": "U Kyaw Kyaw",
-            "original_Birth_Date": "01/01/1960"
-          }
+        const data = Vue.ref([{
+"ppa_No": "12345",
+"pensioner_Name": "Neha Gupta",
+"ministry_Mm_Name": "Ministry of Education",
+"department_Name": "Higher Education Department",
+"position_Name": "Assistant Professor",
+"start_Pension_Date": "01/01/2032",
+"type_Name": "Superannuation pension",
+"pension_Amount": "70,000 INR",
+"graduity_Amount": "2,000,000 INR",
+"apply_Date": "01/06/2031",
+"pensioner_Address": "New Delhi, India",
+"department_Letter_In_Date": "01/05/2031",
+"department_Letter_In_No": "123/Serial No.",
+"department_Letter_Out_Date": "01/06/2031",
+"department_Letter_Out_No": "456/Serial No.",
+"last_Drawn_Salary": "120,000 INR",
+"distinguished_Mark": "Mole on forehead",
+"height": "5 feet 3 inches",
+"birth_Date": "15/07/1965",
+"race": "Indian",
+"religion": "Hindu",
+"father_Name": "Rajiv Gupta",
+"bank_Name": "State Bank of India, Delhi Branch"
+},
+{
+"gender": "Female",
+"mother_Name": "Anita Gupta",
+"nrc": "1234/ABC(N)56789",
+"admin_Letter_No": "789/Serial No.",
+"financial_Year": "2031-2032",
+"start_Posting_Date": "01/01/1995",
+"expire_Penssion_Date": "14/07/2025",
+"service_Years": "30",
+"salary_Description": "Basic salary with DA",
+"medical_Grade": "Grade B+",
+"pension_Group_Name": "Group A",
+"relation_Name": "Daughter"
+},
+{
+"original_Pensioner_Name": "Rajiv Gupta",
+"original_Expire_Date": "14/07/2025",
+"original_Nrc": "1234/ABC(N)56789",
+"original_Father_Name": "Ram Gupta",
+"original_Birth_Date": "25/05/1950"
+}
         ]);
+
 
 				return {
 					showbox,
@@ -159,6 +159,13 @@
 						center: {lat: position.coords.latitude, lng: position.coords.longitude},
 						zoom: 14
 					});
+          var marker = new google.maps.Marker({
+            position: {
+              lat: position.coords.latitude, lng: position.coords.longitude
+            }, 
+            map: map,
+            draggable: true,
+          });
 				});
 			} else {
 				alert("Geolocation is not supported by this browser.");
