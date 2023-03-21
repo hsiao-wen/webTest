@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>復古翻頁時鐘</title>
+  <style>
+    .clock {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 400px;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+}
+
+.flip-container {
+  display: flex;
+}
+
+.flip-digit {
+  height: 100px;
+  width: 70px;
+  margin-right: 10px;
+  position: relative;
+  perspective: 1000px;
+}
+
+.flip-digit-front,
+.flip-digit-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+  color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 80px;
+  font-weight: bold;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  backface-visibility: hidden;
+  transition: transform 0.5s;
+}
+
+.flip-digit-back-2 {
+  transform: rotateX(-180deg);
+}
+
+.flip-digit-hour {
+  background-color: #ff6666;
+}
+
+.flip-digit-minute {
+  background-color: #66ccff;
+}
+
+.flip-digit-second {
+  background-color: #99ff99;
+}
+
+  </style>
+</head>
+
+<body>
+  
+  <div class="clock">
+    <div class="flip-container">
+      <div class="flip-digit flip-digit-hour">
+        <div class="flip-digit-front"></div>
+        <div class="flip-digit-back"></div>
+      </div>
+      <div class="flip-digit flip-digit-minute">
+        <div class="flip-digit-front"></div>
+        <div class="flip-digit-back"></div>
+      </div>
+      <div class="flip-digit flip-digit-second">
+        <div class="flip-digit-front"></div>
+        <div class="flip-digit-back"></div>
+      </div>
+    </div>
+  </div>
+  
+
+  <script>
+    function updateClock() {
+  const now = new Date();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const second = now.getSeconds();
+
+  updateDigit(document.querySelector('.flip-digit-hour'), hour);
+  updateDigit(document.querySelector('.flip-digit-minute'), minute);
+  updateDigit(document.querySelector('.flip-digit-second'), second);
+}
+
+function updateDigit(digit, value) {
+  const front = digit.querySelector('.flip-digit-front');
+  const back = digit.querySelector('.flip-digit-back');
+  back.innerText = value.toString().padStart(2, '0');
+  digit.classList.add('flip');
+  if(back.classList.contains('flip-digit-back-2')) {
+    back.classList.remove('flip-digit-back-2');
+  } else {
+    back.classList.add('flip-digit-back-2');
+  }
+    front.innerText = back.innerText;
+  setTimeout(function() {
+    digit.classList.remove('flip');
+  }, 500);
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+	<script src="https://unpkg.com/vue@next"></script>
+  <!-- bootStrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+  <title>Document</title>
+  <style>
+    body{
+      font-size: 14px;
+      word-break: break-all;
+    }
+    p{
+      margin: 0;
+    }
+    .form-label{
+      margin-bottom: 0;
+      margin-top: 3px;
+    }
+    img{
+      max-width: 100%;
+    }
+    .container{
+      max-width: 540px;
+    } 
+    .btn{
+      padding: .2rem 1rem;;
+    }
+		#map {
+			height: 300px;
+			width: 100%;
+      /* background-color: #EEE; */
+		}
+    .font-weight-bold{
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="container">
+
+    <!-- logo header -->
+    <div class="w-75 m-auto">
+      <img src="./img/logo2.JPG" >
+    </div>
+
+    <!-- QR Code Number -->
+    <div class="text-center font-weight-bold">
+      QR Code Number: AT00000011
+    </div>
+
+    <!-- btn -->
+    <div class="d-flex justify-content-around my-2">
+      <button class="btn" @click="showbox=0" :class="[showbox==0 ? 'btn-primary': 'btn-outline-primary']">First</button>
+      <button class="btn" @click="showbox=1" :class="[showbox==1 ? 'btn-primary': 'btn-outline-primary']">Second</button>
+      <button class="btn" @click="showbox=2" :class="[showbox==2 ? 'btn-primary': 'btn-outline-primary']">Third</button>
+    </div>
+
+    <!-- Data -->
+    <div>
+      <div>
+        <div class="row mb-2 align-items-center" v-for="(item, idx) in data[showbox]">
+          <label class="form-label">{{idx}}</label>
+          <div>
+            <input v-if="idx!='bank_Name'" type="text" class="form-control" :value="item">
+            <textarea v-else type="text" class="form-control" :value="item" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- map -->
+    <div>
+      <div id="map"></div>
+    </div>
+
+    <!-- pension Department -->
+    <div class="text-center">
+      <p>Office No (34), Pension Department, Ministry of Planning and Finance, Nay Pxj Taw, Myanmar.</p>
+      <a href="https://www.pension.gov.mm" target="_blank">https://www.pension.gov.mm</a>
+    </div>
+  </div>
+
+  <script>
+		const app = Vue.createApp({
+			setup() {
+				const showbox = Vue.ref(0);
+        const data = Vue.ref([
+          { 
+            "ppa_No": "98765",
+            "pensioner_Name": "Maung Nyein Su",
+            "ministry_Mm_Name": "Myanmar language department",
+            "department_Name": "Municipality Administration",
+            "position_Name": "Chef",
+            "start_Pension_Date": "01/01/2022",
+            "type_Name": "Monthly pension",
+            "pension_Amount": "500,000 MMK",
+            "graduity_Amount": "20,000,000 MMK",
+            "apply_Date": "01/12/2021",
+            "pensioner_Address": "Yangon, Myanmar",
+            "department_Letter_In_Date": "01/10/2021",
+            "department_Letter_In_No": "123/Serial No.",
+            "department_Letter_Out_Date": "01/11/2021",
+            "department_Letter_Out_No": "456/Serial No.",
+            "last_Drawn_Salary": "1,000,000 MMK",
+            "distinguished_Mark": "Tattoo on shoulder",
+            "height": "5 feet 7 inches",
+            "birth_Date": "01/01/1960",
+            "race": "Karen",
+            "religion": "Buddhist",
+            "father_Name": "Kyaw Kyaw",
+            "bank_Name": "Sein Ta Lone Bank, Mandalay Branch"
+          },
+          {
+            "gender": "Male",
+            "mother_Name": "Khin Khin Nyein",
+            "nrc": "12/ABC(N)123456",
+            "admin_Letter_No": "789/Serial No.",
+            "financial_Year": "2021-2022",
+            "start_Posting_Date": "01/01/1985",
+            "expire_Penssion_Date": "31/12/2035",
+            "service_Years": "30",
+            "salary_Description": "Basic salary with allowances",
+            "medical_Grade": "Grade A+",
+            "pension_Group_Name": "Group A",
+            "relation_Name": "Son",
+          },
+          {
+            "original_Pensioner_Name": "U Maung Maung Nyein Nyein Su",
+            "original_Expire_Date": "31/12/2035",
+            "original_Nrc": "12/ABC(N)123456",
+            "original_Father_Name": "U Kyaw Kyaw",
+            "original_Birth_Date": "01/01/1960"
+          }
+        ]);
+
+
+				return {
+					showbox,
+          data
+				};
+			}
+		});
+		app.mount('#app');
+	</script>
+
+
+	<script>
+    // google map
+		function initMap() {
+			// 使用 Geolocation API 取得使用者的位置
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					// 使用 Google Maps API 顯示地圖
+					var map = new google.maps.Map(document.getElementById('map'), {
+						center: {lat: position.coords.latitude, lng: position.coords.longitude},
+						zoom: 14
+					});
+				});
+			} else {
+				alert("Geolocation is not supported by this browser.");
+			}
+		}
+	</script>
+  <!-- Google Maps API -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_FNGrwuDz3QmoRFZU2_ik7u19-8pVtas&callback=initMap"></script>
+  
+</body>
+</html>
