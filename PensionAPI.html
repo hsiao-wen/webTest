@@ -14,10 +14,13 @@
   <style>
     body{
       font-size: 14px;
-      word-break: break-all;
+      word-break: break-word;
     }
     p{
       margin: 0;
+    }
+    .form-control:read-only {
+      background-color: #f9f9f9;
     }
     .form-label{
       margin-bottom: 0;
@@ -52,7 +55,7 @@
 
     <!-- QR Code Number -->
     <div class="text-center font-weight-bold">
-      QR Code Number: AT00000011
+      QR Code Number: {{qrNumber}}
     </div>
 
     <!-- btn -->
@@ -68,8 +71,8 @@
         <div class="row mb-2 align-items-center" v-for="(item, idx) in data[showbox]">
           <label class="form-label">{{idx}}</label>
           <div>
-            <input v-if="idx!='bank_Name'" type="text" class="form-control" :value="item">
-            <textarea v-else type="text" class="form-control" :value="item" rows="3"></textarea>
+            <input v-if="idx!='bank_Name'" type="text" class="form-control" :value="item" readonly>
+            <textarea v-else type="text" class="form-control" :value="item" rows="3" readonly></textarea>
           </div>
         </div>
       </div>
@@ -88,92 +91,183 @@
   </div>
 
   <script>
-
-
 		const app = Vue.createApp({
 			setup() {
         // Number
-        const locationValue = (new URL(location.href)).searchParams.get('n')
+        const qrNumber = (new URL(location.href)).searchParams.get('n')
 				const showbox = Vue.ref(0);
-
-        const mymethod = () => {
-          $(document).ready(function() {
-            $.ajax({
-              type: "GET",
-              url: "http://203.81.89.218:61/api/PensionQr/GetPensionQrData/"+locationValue,
-              success: function(response) {
-                console.log(response);
-                // 在這裡處理伺服器返回的數據
-              },
-              error: function(xhr, status, error) {
-                console.log("AJAX錯誤：" + status + "-" + error);
-              }
-            });
-          });
-        }
-        mymethod();
-
-
-
-
-
-
-
-
-
-
-
         const data = Vue.ref([
           { 
-            "ppa_No": "98765",
-            "pensioner_Name": "Maung Nyein Su",
-            "ministry_Mm_Name": "Myanmar language department",
-            "department_Name": "Municipality Administration",
-            "position_Name": "Chef",
-            "start_Pension_Date": "01/01/2022",
-            "type_Name": "Monthly pension",
-            "pension_Amount": "500,000 MMK",
-            "graduity_Amount": "20,000,000 MMK",
-            "apply_Date": "01/12/2021",
-            "pensioner_Address": "Yangon, Myanmar",
-            "department_Letter_In_Date": "01/10/2021",
-            "department_Letter_In_No": "123/Serial No.",
-            "department_Letter_Out_Date": "01/11/2021",
-            "department_Letter_Out_No": "456/Serial No.",
-            "last_Drawn_Salary": "1,000,000 MMK",
-            "distinguished_Mark": "Tattoo on shoulder",
-            "height": "5 feet 7 inches",
-            "birth_Date": "01/01/1960",
-            "race": "Karen",
-            "religion": "Buddhist",
-            "father_Name": "Kyaw Kyaw",
-            "bank_Name": "Sein Ta Lone Bank, Mandalay Branch"
+            "ppa_No": "",
+            "pensioner_Name": "",
+            "ministry_Mm_Name": "",
+            "department_Name": "",
+            "position_Name": "",
+            "start_Pension_Date": "",
+            "type_Name": "",
+            "pension_Amount": "",
+            "graduity_Amount": "",
+            "apply_Date": "",
+            "pensioner_Address": "",
+            "department_Letter_In_Date": "",
+            "department_Letter_In_No": "",
+            "department_Letter_Out_Date": "",
+            "department_Letter_Out_No": "",
+            "last_Drawn_Salary": "",
+            "distinguished_Mark": "",
+            "height": "",
+            "birth_Date": "",
+            "race": "",
+            "religion": "",
+            "father_Name": "",
+            "bank_Name": ""
           },
           {
-            "gender": "Male",
-            "mother_Name": "Khin Khin Nyein",
-            "nrc": "12/ABC(N)123456",
-            "admin_Letter_No": "789/Serial No.",
-            "financial_Year": "2021-2022",
-            "start_Posting_Date": "01/01/1985",
-            "expire_Penssion_Date": "31/12/2035",
-            "service_Years": "30",
-            "salary_Description": "Basic salary with allowances",
-            "medical_Grade": "Grade A+",
-            "pension_Group_Name": "Group A",
-            "relation_Name": "Son",
+            "gender": "",
+            "mother_Name": "",
+            "nrc": "",
+            "admin_Letter_No": "",
+            "financial_Year": "",
+            "start_Posting_Date": "",
+            "expire_Penssion_Date": "",
+            "service_Years": "",
+            "salary_Description": "",
+            "medical_Grade": "",
+            "pension_Group_Name": "",
+            "relation_Name": "",
           },
           {
-            "original_Pensioner_Name": "U Maung Maung Nyein Nyein Su",
-            "original_Expire_Date": "31/12/2035",
-            "original_Nrc": "12/ABC(N)123456",
-            "original_Father_Name": "U Kyaw Kyaw",
-            "original_Birth_Date": "01/01/1960"
+            "original_Pensioner_Name": "",
+            "original_Expire_Date": "",
+            "original_Nrc": "",
+            "original_Father_Name": "",
+            "original_Birth_Date": ""
           }
         ]);
 
+        const apimethod = () => {
+          let apiData = {};
+          // $.ajax({
+          //   type: "GET",
+          //   url: "http://203.81.89.218:61/api/PensionQr/GetPensionQrData/"+locationValue,
+          //   success: function(response) {
+          //     console.log(response);
+          //     // 在這裡處理伺服器返回的數據
+          //   },
+          //   error: function(xhr, status, error) {
+          //     console.log("AJAX錯誤：" + status + "-" + error);
+          //   }
+          // });
+
+          // A000000001
+          if (qrNumber == 'A000000001') {
+            apiData = {
+              "pensionQrpkid": 6,
+              "ppa_No": "F(NPT)0185(2018)",
+              "pensioner_Name": "ဦးမြင့်အေး",
+              "birth_Date": "Aug  9 1939 12:00AM",
+              "gender": "ကျား",
+              "father_Name": "undefined",
+              "mother_Name": "-",
+              "nrc": "၁၂/ဗဘန(နိုင်)၀၄၈၆၈၇",
+              "race": "မြန်မာ",
+              "religion": "ဗုဒ္ဓဘာသာ",
+              "distinguished_Mark": "-",
+              "height": "၅.၁",
+              "admin_Letter_No": "၈၅၆၀/၁9၁၆.၅.၁၈",
+              "financial_Year": "2018 - 2018",
+              "ministry_Mm_Name": "စက်မှုဝန်ကြီးဌာန",
+              "department_Name": "စက်မှုပူးပေါင်းဆောင်ရွက်ရေးဦးစီးဌာန",
+              "position_Name": "ရဲတပ်သား",
+              "department_Letter_In_Date": "Apr 24 2018 12:00AM",
+              "department_Letter_In_No": "၅၂၂၁/99၁/၁-၁၀/၂၀၁၈",
+              "start_Posting_Date": "Mar  1 1970 ",
+              "start_Pension_Date": "Aug 27 2018 12:00AM",
+              "expire_Penssion_Date": "Jul  1 2029 ",
+              "last_Drawn_Salary": "135000",
+              "service_Years": "42",
+              "department_Letter_Out_No": "-",
+              "department_Letter_Out_Date": "Jan  1 1970",
+              "apply_Date": "Jan  1 1970",
+              "salary_Description": "135000-2000-145000",
+              "graduity_Amount": "1692000",
+              "bank_Name": "မြန်မာ့စီးပွားရေးဘဏ်(ပျဉ်းမနား)",
+              "type_Name": "မိသားစုပင်စင်",
+              "pension_Amount": "21420",
+              "medical_Grade": "",
+              "pension_Group_Name": "ဦးစီးဌာန",
+              "pensioner_Address": "တိုက်(၂၃၀၃)၊အခန်း(၂၄)၊ဗလသိဒ္ဓိရပ်ကွက်၊နေပြည်တော်၊ ရွှေတောင်၊  ပြည်၊ ပဲခူးတိုင်းဒေသကြီး",
+              "relation_Name": "သား",
+              "original_Pensioner_Name": "ဒေါ်ဂျနဖာ",
+              "original_Expire_Date": "Sep  9 2016 12:00AM",
+              "original_Birth_Date": "Feb 10 1954 12:00AM",
+              "original_Father_Name": "U Zaw Win",
+              "original_Nrc": "၁၂/ဗဘန(နိုင်)၀၄၈၆၈၇",
+              "qrcodeId": "A000000001",
+              "createdDate": "2023-03-18T16:25:57.62",
+              "createdBy": "Admin"
+            };
+          } else if (qrNumber == 'A000000002') {
+            apiData = {
+              "pensionQrpkid": 7,
+              "ppa_No": "N(RKG)000004(2022-2023)",
+              "pensioner_Name": "ဒေါ်မြရွှေ",
+              "birth_Date": "1962-03-01",
+              "gender": "မ",
+              "father_Name": "ဦးအောင်ကျော်ဇော",
+              "mother_Name": "ဒေါ်မသိန်းခင်",
+              "nrc": "၁၁/စတန(နိုင်)၀၁၂၄၂၂",
+              "race": "ရခိုင်",
+              "religion": "ဗုဒ္ဓဘာသာ",
+              "distinguished_Mark": "ယာလည်ပင်းအမှတ်ရှိ",
+              "height": "၄'၁၀''",
+              "admin_Letter_No": "010",
+              "financial_Year": "2022 - 2023",
+              "ministry_Mm_Name": "ပညာရေးဝန်ကြီးဌာန",
+              "department_Name": "အခြေခံပညာဦးစီးဌာန",
+              "position_Name": "မူလတန်းပြ(ဖွဲ့စည်းပုံသစ်)",
+              "department_Letter_In_Date": "2022-03-11",
+              "department_Letter_In_No": "ဌာနစု(၁၀)/၁၄၈၀/ပင်စင်(၂၂)",
+              "start_Posting_Date": "1985-11-26",
+              "start_Pension_Date": "2022-03-01",
+              "expire_Penssion_Date": "",
+              "last_Drawn_Salary": "216000",
+              "service_Years": "36",
+              "department_Letter_Out_No": "0010",
+              "department_Letter_Out_Date": "2022-04-01",
+              "apply_Date": "01-04-2022",
+              "salary_Description": "216000-2000-226000",
+              "graduity_Amount": "3888000",
+              "bank_Name": "မြန်မာ့စီးပွားရေးဘဏ်(စစ်တွေ)",
+              "type_Name": "သက်ပြည့်ပင်စင်",
+              "pension_Amount": "116640",
+              "medical_Grade": "",
+              "pension_Group_Name": "ဦးစီးဌာန",
+              "pensioner_Address": "လမ္မတော်တောင် ၊ လမ်းမကြီး၊ စစ်တွေ၊  စစ်တွေ၊ ရခိုင်ပြည်နယ်",
+              "relation_Name": "",
+              "original_Pensioner_Name": "",
+              "original_Expire_Date": "",
+              "original_Birth_Date": "",
+              "original_Father_Name": "",
+              "original_Nrc": "၁၁/စတန(နိုင်)၀၁၂၄၂၂",
+              "qrcodeId": "A000000002",
+              "createdDate": "2023-03-21T12:35:38.897",
+              "createdBy": "Admin"
+            }
+          } else {
+            apiData = {};
+          }
+          
+          data.value.forEach(element => {
+            Object.keys(element).forEach((key) => {
+              element[key] = apiData[key]
+            });
+          });
+        }
+        apimethod();
 
 				return {
+          qrNumber,
 					showbox,
           data
 				};
@@ -185,30 +279,30 @@
 
 	<script>
     // google map
-		// function initMap() {
-		// 	// 使用 Geolocation API 取得使用者的位置
-		// 	if (navigator.geolocation) {
-		// 		navigator.geolocation.getCurrentPosition(function(position) {
-		// 			// 使用 Google Maps API 顯示地圖
-		// 			var map = new google.maps.Map(document.getElementById('map'), {
-		// 				center: {lat: position.coords.latitude, lng: position.coords.longitude},
-		// 				zoom: 14
-		// 			});
-    //       var marker = new google.maps.Marker({
-    //         position: {
-    //           lat: position.coords.latitude, lng: position.coords.longitude
-    //         }, 
-    //         map: map,
-    //         draggable: true,
-    //       });
-		// 		});
-		// 	} else {
-		// 		alert("Geolocation is not supported by this browser.");
-		// 	}
-		// }
+		function initMap() {
+			// 使用 Geolocation API 取得使用者的位置
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(function(position) {
+					// 使用 Google Maps API 顯示地圖
+					var map = new google.maps.Map(document.getElementById('map'), {
+						center: {lat: position.coords.latitude, lng: position.coords.longitude},
+						zoom: 14
+					});
+          var marker = new google.maps.Marker({
+            position: {
+              lat: position.coords.latitude, lng: position.coords.longitude
+            }, 
+            map: map,
+            draggable: true,
+          });
+				});
+			} else {
+				alert("Geolocation is not supported by this browser.");
+			}
+		}
 	</script>
   <!-- Google Maps API -->
-  <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_FNGrwuDz3QmoRFZU2_ik7u19-8pVtas&callback=initMap"></script> -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_FNGrwuDz3QmoRFZU2_ik7u19-8pVtas&callback=initMap"></script>
   
 </body>
 </html>
