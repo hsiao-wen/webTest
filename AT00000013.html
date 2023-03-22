@@ -17,6 +17,9 @@
     p{
       margin: 0;
     }
+    b{
+      font-size: 18px;
+    }
     .form-label{
       margin-bottom: 0;
       margin-top: 3px;
@@ -38,9 +41,19 @@
     .font-weight-bold{
       font-weight: bold;
     }
+    .header{
+      background-color: #d9230f;
+      text-align: center;
+      padding: 5px;
+    }
   </style>
 </head>
 <body>
+  
+  <div class="header">
+    <img src="./img/yfplogo-white.png" alt="">
+  </div>
+
   <div id="app" class="container">
 
     <!-- logo header -->
@@ -52,6 +65,24 @@
     <div class="text-center font-weight-bold">
       QR Code Number: AT00000013
     </div>
+
+    <hr>
+
+    <!-- Authentication Result -->
+    <div class="text-center">
+      <h3><img src="./img/yfp.ico"> Authentication Result</h3>
+      <p>Authenticatation Number：</p>
+      <p>W0369
+        <i><b>3</b></i>
+        4803
+      </p>
+      <p>Check number is 
+        <b>5</b> 
+        from the right.
+      </p>
+    </div>
+
+    <hr>
 
     <!-- btn -->
     <div class="d-flex justify-content-around my-2">
