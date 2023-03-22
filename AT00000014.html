@@ -56,20 +56,9 @@
 
   <div id="app" class="container">
 
-    <!-- logo header -->
-    <div class="w-75 m-auto">
-      <img src="./img/logo2.JPG" >
-    </div>
-
-    <!-- QR Code Number -->
-    <div class="text-center font-weight-bold">
-      QR Code Number: AT00000014
-    </div>
-
-    <hr>
 
     <!-- Authentication Result -->
-    <div class="text-center">
+    <div class="text-center mt-2">
       <h3><img src="./img/yfp.ico"> Authentication Result</h3>
       <p>Authenticatation Number：</p>
       <p>W040
@@ -83,6 +72,16 @@
     </div>
 
     <hr>
+    <!-- logo header -->
+    <div class="w-75 m-auto">
+      <img src="./img/logo2.JPG" >
+    </div>
+
+    <!-- QR Code Number -->
+    <div class="text-center font-weight-bold">
+      QR Code Number: AT00000014
+    </div>
+
     <!-- btn -->
     <div class="d-flex justify-content-around my-2">
       <button class="btn" @click="showbox=0" :class="[showbox==0 ? 'btn-primary': 'btn-outline-primary']">First</button>
