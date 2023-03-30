@@ -77,29 +77,44 @@
     <div class="text-center font-weight-bold">
       QR Code Number: AT00000011
     </div>
+    
+    <hr>
 
     <!-- btn -->
-    <div class="d-flex justify-content-around my-2">
+    <div v-if="checkQrIdOK" class="d-flex justify-content-around my-2">
       <button class="btn" @click="showbox=0" :class="[showbox==0 ? 'btn-primary': 'btn-outline-primary']">First</button>
       <button class="btn" @click="showbox=1" :class="[showbox==1 ? 'btn-primary': 'btn-outline-primary']">Second</button>
       <button class="btn" @click="showbox=2" :class="[showbox==2 ? 'btn-primary': 'btn-outline-primary']">Third</button>
     </div>
 
-    <!-- Data -->
-    <div>
+    <!-- checkQrId -->
+    <div v-if="!checkQrIdOK">
+      <label>Please Enter Qr id</label>
+      <div class="d-flex">
+        <div class="w-75 pe-3">
+          <input type="text" class="form-control" v-model="inputQrId" placeholder="Your Qr id">
+        </div>
+        <div class="w-25 d-grid gap-2">
+          <button @click="checkQrId" class="btn btn-full btn-primary">Sent</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- showData -->
+    <div v-if="checkQrIdOK">
       <div>
-        <div class="row mb-2 align-items-center" v-for="(item, idx) in data[showbox]">
+        <div class="row mb-2 align-items-center" v-for="(item, idx) in showData[showbox]">
           <label class="form-label">{{idx}}</label>
           <div>
-            <input v-if="idx!='bank_Name'" type="text" class="form-control" :value="item">
-            <textarea v-else type="text" class="form-control" :value="item" rows="3"></textarea>
+            <input v-if="idx!='bank_Name'" type="text" class="form-control" :value="item" readonly>
+            <textarea v-else type="text" class="form-control" :value="item" rows="3" readonly></textarea>
           </div>
         </div>
       </div>
     </div>
 
     <!-- map -->
-    <div>
+    <div class="mt-3">
       <div id="map"></div>
     </div>
 
@@ -114,6 +129,7 @@
 		const app = Vue.createApp({
 			setup() {
 				const showbox = Vue.ref(0);
+        // 先寫固定。應該呼叫API才有員工資料
         const data = Vue.ref([
           { 
             "ppa_No": "98765",
@@ -162,11 +178,30 @@
             "original_Birth_Date": "01/01/1960"
           }
         ]);
-
+        // 先寫固定。應該呼叫API檢查QRID是否正確，正確才拿到員工資料
+        const correctQrId = Vue.ref('ff3780');
+        const inputQrId = Vue.ref('');
+        const showData = Vue.ref([]);
+        const checkQrIdOK = Vue.ref(false);
+        
+        function checkQrId() {
+          if(inputQrId.value == correctQrId.value) {
+            checkQrIdOK.value = true;
+            showData.value = data.value;
+          } else if (inputQrId.value == '') {
+            alert('Please Enter Qr id')
+          } else {
+            alert('Qr id Error')
+          }
+        };
 
 				return {
 					showbox,
-          data
+          data,
+          checkQrId,
+          inputQrId,
+          showData,
+          checkQrIdOK,
 				};
 			}
 		});
