@@ -43,7 +43,7 @@
                     document.cookie = 'cookie2=' + encodeURIComponent(JSON.stringify(this.BasketContent))
                 },
                 showCookies(name) {
-                    alert(JSON.parse(this.getCookie(name)));
+                    alert(this.getCookie(name));
                 },
                 getCookie(name) {
                     let cookieArr = document.cookie.split(";");
