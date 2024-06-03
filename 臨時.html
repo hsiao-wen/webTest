@@ -1,27 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Cookie Setter</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 
 <body>
+    <div id="app" class="container mt-5">
+        <div class="form-group">
+            <label for="cookie1">設定cookie 不使用 encodeURIComponent ()</label>
+            <input type="text" id="cookie1" class="form-control" v-model="cookie1">
+            <button class="btn btn-primary mt-2" @click="setCookieWithoutEncoding">設定</button>
+            <button class="btn btn-secondary mt-2" @click="showCookies('cookie1')">show出cookie</button>
+        </div>
+        <div class="form-group mt-4">
+            <label for="cookie2">設定cookie 使用 encodeURIComponent ()</label>
+            <input type="text" id="cookie2" class="form-control" v-model="cookie2">
+            <button class="btn btn-primary mt-2" @click="setCookieWithEncoding">設定</button>
+            <button class="btn btn-secondary mt-2" @click="showCookies('cookie2')">show出cookie</button>
+        </div>
+    </div>
 
     <script>
-        function test() {
-            var a=1;
-            let b=2;
-            {
-                var a=3;
-                let b=4;
+        const app = Vue.createApp({
+            data() {
+                return {
+                    cookie1: '',
+                    cookie2: ''
+                };
+            },
+            methods: {
+                setCookieWithoutEncoding() {
+                    document.cookie = `cookie1=${this.cookie1}; path=/`;
+                },
+                setCookieWithEncoding() {
+                    document.cookie = `cookie2=${encodeURIComponent(this.cookie2)}; path=/`;
+                },
+                showCookies(name) {
+                    alert(this.getCookie(name));
+                },
+                getCookie(name) {
+                    let cookieArr = document.cookie.split(";");
+
+                    for (let i = 0; i < cookieArr.length; i++) {
+                        let cookiePair = cookieArr[i].split("=");
+
+                        // 移除 cookie 名稱開頭的空白，並與給定的名稱進行比較
+                        if (name === cookiePair[0].trim()) {
+                            // 解碼 cookie 值並返回
+                            return decodeURIComponent(cookiePair[1]);
+                        }
+                    }
+
+                    /* Return null if not found */
+                    return null;
+                }
             }
-            console.log(a); // 3
-            console.log(b); // 2
-        }
-        test();
+        });
+
+        app.mount('#app');
     </script>
 </body>
 

@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- 刮刮卡 圖案版本 -->
 <html lang="en">
 <!-- 需要 JQuery -->
 <head>
@@ -73,10 +74,10 @@
     <div class="">
       <img src="./img/0314-五倍券-海報.jpg" alt="">
     </div>
-    <h2>刮刮樂 Demo 文字</h2>
+    <h2>刮刮樂 Demo 圖片</h2>
     <div id="containerCanvas" class="containerCanvas">
       <!-- 是用position定位,要設定大小(固定的),margin要=負長寬一半 -->
-      <canvas id="bottom"></canvas>
+      <div class="bottomImg"></div>
       <canvas id="top"></canvas>
     </div>
 
@@ -88,52 +89,16 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.slim.js" integrity="sha256-HwWONEZrpuoh951cQD1ov2HUK5zA5DwJ1DNUXaM6FsY=" crossorigin="anonymous" ></script>
   <script>
-    var useNumber = 0,
-      luckNumber = [],
+    var 
       mousedown,
       w = 300,
       h = 300;
 
     // 設定上層銀漆 並繪製
     var topCanvas = document.querySelector('#top');
-    var bottomCanvas = document.querySelector("#bottom");
     topCanvas.width =  w;
     topCanvas.height = h;
-    bottomCanvas.width =  w;
-    bottomCanvas.height = h;
     var ctxTop = topCanvas.getContext('2d');
-    var ctxBot = bottomCanvas.getContext("2d");
-    bottomCanvas.style.background = "#FDD";
-    ctxBot.font = "30px Consolas";
-
-    function drawBot() {
-      //清除區域，為了點擊再來一次進行頁面重繪
-      // ctxBot.clearRect(0, 0, w, h);
-      luckNumber.push(getToken());
-      //fillText(填充)實心數字 改為strokeText(描邊)為空心數字
-      ctxBot.strokeText("您的序號為：", 10, 133);
-      ctxBot.fillText(luckNumber[luckNumber.length - 1], 10, 166);
-    }
-
-    //獲取 序號
-    function getToken() {
-      let num = Math.ceil(Math.random() * 1000);
-      let token = "QwErTyUiOp1A2" + num;
-      return token;
-    }
-
-    // 畫中獎文字背景圖
-    function drawBotImg() {
-      var img = new Image();
-      img.onload = function(){
-        ctxBot.drawImage(img,0,0);
-        drawBot();
-      };
-      img.src = './img/中獎文字背景圖.jpg';
-    }
-
-    drawBotImg();
-    // drawBot();
     drawTop();
 
     function drawTop() {
@@ -180,8 +145,8 @@
         if (ev.changedTouches) {
           ev = ev.changedTouches[ev.changedTouches.length - 1];
         }
-        // console.log( "X : " + ev.pageX + " - " + top.offsetLeft);
-        // console.log( "Y : " + ev.pageY + " - " + $("#top").offset().top);
+        console.log( "X : " + ev.pageX + " - " + top.offsetLeft);
+        console.log( "Y : " + ev.pageY + " - " + $("#top").offset().top);
 
         var x = ev.pageX - $("#top").offset().left;
         var y = ev.pageY - $("#top").offset().top;
@@ -208,7 +173,6 @@
       if (n >= data.length * 0.6) {
         ctxTop.globalCompositeOperation = 'destination-over';
         ctxTop.canvas.style.opacity = 0;
-        // document.querySelector(".bottom").style.display = "block";
         // alert("恭喜抽中 頭獎");
       }
     }
