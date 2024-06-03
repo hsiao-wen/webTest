@@ -11,15 +11,16 @@
 
 <body>
     <div id="app" class="container mt-5">
+        <p>{{BasketContent}}</p>
         <div class="form-group">
             <label for="cookie1">設定cookie 不使用 encodeURIComponent ()</label>
-            <input type="text" id="cookie1" class="form-control" v-model="cookie1">
+            <!-- <input type="text" id="cookie1" class="form-control" v-model="cookie1"> -->
             <button class="btn btn-primary mt-2" @click="setCookieWithoutEncoding">設定</button>
             <button class="btn btn-secondary mt-2" @click="showCookies('cookie1')">show出cookie</button>
         </div>
         <div class="form-group mt-4">
             <label for="cookie2">設定cookie 使用 encodeURIComponent ()</label>
-            <input type="text" id="cookie2" class="form-control" v-model="cookie2">
+            <!-- <input type="text" id="cookie2" class="form-control" v-model="cookie2"> -->
             <button class="btn btn-primary mt-2" @click="setCookieWithEncoding">設定</button>
             <button class="btn btn-secondary mt-2" @click="showCookies('cookie2')">show出cookie</button>
         </div>
@@ -29,19 +30,20 @@
         const app = Vue.createApp({
             data() {
                 return {
+                    BasketContent: [{"item_name":"zh_tw 搪瓷杯_畢業萬歲"},{"item_name":"zh_tw 單張貼紙-橢圓形_70X50"}],
                     cookie1: '',
                     cookie2: ''
                 };
             },
             methods: {
                 setCookieWithoutEncoding() {
-                    document.cookie = `cookie1=${this.cookie1}; path=/`;
+                    document.cookie = 'cookie1=' + JSON.stringify(this.BasketContent)
                 },
                 setCookieWithEncoding() {
-                    document.cookie = `cookie2=${encodeURIComponent(this.cookie2)}; path=/`;
+                    document.cookie = 'cookie2=' + encodeURIComponent(JSON.stringify(this.BasketContent))
                 },
                 showCookies(name) {
-                    alert(this.getCookie(name));
+                    alert(JSON.parse(this.getCookie(name)));
                 },
                 getCookie(name) {
                     let cookieArr = document.cookie.split(";");
