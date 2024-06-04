@@ -16,18 +16,21 @@
 
 <body>
     <div id="app" class="container mt-5">
-        <p>快速設定input</p>
-        <button class="btn btn-sm btn-outline-primary mt-2" @click="BasketContent = JSON.stringify(myarray)">陣列轉JSON字串</button>
         
         
         <div class="form-group mt-3">
             <label>input</label>
             <input type="text" v-model="BasketContent" class="form-control">
         </div>
-        <button class="btn btn-primary mt-2" @click="setCookieWithoutEncoding">不使用encodeURIComponent()設定cookie</button>
+        
+        <label>快速設定input</label>
+        <button class="btn btn-sm btn-outline-primary mt-2 ml-2" @click="BasketContent = JSON.stringify(myarray)">陣列轉JSON字串</button>
+        <hr>
+        <button class="btn btn-warning mt-2" @click="setCookieWithoutEncoding">不使用encodeURIComponent()設定cookie</button>
         <br>
         <button class="btn btn-primary mt-2" @click="setCookieWithEncoding">使用encodeURIComponent()設定cookie</button>
         <br>
+        <hr>
         <button class="btn btn-secondary mt-2" @click="getMyCookie('mycookie')">取得cookie</button>
         <p>{{mycookie}}</p>
 
