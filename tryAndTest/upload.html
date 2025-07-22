@@ -1,0 +1,43 @@
+<!-- saved from url=(0041)http://mis6.yfp.com.tw/O/OKA01/upload.cfm -->
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 取得當前的 referrer 網址
+            const referrerUrl = document.referrer || "No referrer available";
+
+            // 將 referrer 網址新增到 <body> 中
+            const referrerElement = document.createElement("div");
+            referrerElement.innerText = `Referrer URL: ${referrerUrl}`;
+            document.body.appendChild(referrerElement);
+
+            // 嘗試取得 history.go(-1) 網址
+            const previousUrlElement = document.createElement("div");
+            try {
+                history.go(-1);
+                const previousUrl = document.referrer || "No history URL available"; // Referrer 作為近似的上一頁
+                previousUrlElement.innerText = `Previous URL (history.go(-1)): ${previousUrl}`;
+            } catch (error) {
+                previousUrlElement.innerText = `Error retrieving history.go(-1): ${error.message}`;
+            }
+
+            // 將 history.go(-1) 網址新增到 <body> 中
+            document.body.appendChild(previousUrlElement);
+        });
+
+        // setTimeout(() => {
+        alert('這是一個alert訊息');
+        // window.location.href = document.referrer;
+        history.go(-1);
+        // }, 100)
+    </script>
+</head>
+
+<body>
+    <br><br><br>
+</body>
+
+</html>

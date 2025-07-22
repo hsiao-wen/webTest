@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    
+    <!-- Google Fonts icon  網址 https://fonts.google.com/icons?icon.size=36&icon.color=%235f6368&icon.platform=web -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* 為了此widget不要有margin */
+        .page-wrapper .widget {
+            margin: 0;
+        }
+
+        /* 商品特色 pc左右交錯 md上下顯示 */
+        @media (max-width: 768px) {
+            .columns-order-change-md .pagebuilder-column-line .pagebuilder-column:first-child {
+                order: 2;
+            }
+
+            .columns-order-change-md .pagebuilder-column-line .pagebuilder-column:last-child {
+                order: 1;
+            }
+        }
+
+        /* submit-btn表單送出按鈕樣式 */
+        .yfp-submit-btn {
+            margin-top: 20px;
+            margin-left: 10px;
+            padding: 10px;
+            background-color: #5C87A6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .yfp-submit-btn:hover {
+            background-color: rgba(35, 104, 129, 1);
+            color: white;
+            border: none;
+        }
+
+        .yfp-submit-btn:focus,
+        .yfp-submit-btn:active {
+            background-color: #5C87A6;
+            color: white !important;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .yfp-submit-btn {
+                margin-top: 10px;
+                margin-left: 0px;
+                width: 200px;
+            }
+
+            .yfp-submit-btn:hover {
+                background-color: rgba(35, 104, 129, 1);
+                color: white;
+                border: none;
+            }
+        }
+
+        /* alert提示樣式 */
+        .yfp-alert-bg {
+            position: fixed;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 999;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .yfp-alert {
+            width: 450px;
+            height: 200px;
+            position: fixed;
+            left: 50%;
+            top: 30%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgb(255, 255, 255);
+            box-shadow: 0px 0px 10px #00000029;
+            border: 1px solid #EFECEC;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        /* 手機版提醒樣式 麵包屑修好要調整 */
+        @media (max-width: 768px) {
+            .yfp-alert {
+                width: 70%;
+                height: 10%;
+                padding: 20px;
+                top: 30%;
+                left: 45%;
+                transform: translate(-50%, -50%);
+            }
+
+            .yfp-alert-message {
+                font-size: 16px;
+            }
+        }
+
+        .yfp-alert-message {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .yfp-text-primary {
+            color: #5C87A6
+        }
+
+        .yfp-text-danger {
+            color: #dc3545;
+        }
+
+        .yfp-headinghidden {
+            visibility: hidden;
+        }
+
+        /* Page Builder 的 FAQ 元件的 展開符號*/
+        [data-content-type="faq-item"] [data-role="collapsible"][aria-expanded="false"]:after,
+        [data-content-type="faq-item"] h3[aria-expanded="false"]:after {
+            font-family: 'Material Icons';
+            content: "\e148";
+        }
+
+        /* Page Builder 的 FAQ 元件的 收合符號*/
+        [data-content-type="faq-item"] [data-role="collapsible"][aria-expanded="true"]:after,
+        [data-content-type="faq-item"] h3[aria-expanded="true"]:after {
+            font-family: 'Material Icons';
+            content: "\e15d";
+        }
+
+        /* Page Builder 的 FAQ 元件的 展開收合符號  的大小*/
+        [data-content-type="faq-item"] [data-role="collapsible"]:after,
+        [data-content-type="faq-item"] h3:after {
+            font-size: 15px;
+        }
+        @media (min-width: 1024px),
+        print {
+
+            [data-content-type="faq-item"] [data-role="collapsible"]:after,
+            [data-content-type="faq-item"] h3:after {
+                font-size: 20px;
+            }
+        }
+
+        /* FAQ工具在屏幕寬度小於768px時應用的樣式 */
+        @media (max-width: 768px) {
+            .yfp-faq-item span {
+                font-size: 14px !important;
+            }
+        }
+
+        .yfp-papersample_title {
+            color: #4c9dbb;
+        }
+
+        /* 消除list前方點、padding */
+        .yfp-list-style-none ul {
+            list-style: none;
+            padding-inline-start: 0px;
+        }
+        /* 索取紙樣 文字 */
+        .yfp-papersample-text {
+            padding-left: 0px;
+        }
+        
+        @media (min-width: 768px) {
+            .yfp-papersample-text {
+                padding-left: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="container">
+        <h1>聯絡專人</h1>
+        <p>有任何商品或編輯的問題、大量客製或特殊規格印刷需求，歡迎與我們聯繫，我們將會盡快回覆您！</p>
+        <p>客服信箱：<a href="mailto:services@mail.cloudw2p.com">services@mail.cloudw2p.com</a></p>
+        <p>客服時間：週一至週五（不包含定休日）10:00 ~ 12:00 13:00 ~ 17:00</p>
+        <form id="contactForm" action="https://dev-api.cloudw2p.com/api/aiow2p/v1/apitest" method="post">
+
+            <label for="file">選擇檔案 <span class="required">*</span></label>
+            <input type="file" id="file" name="file" required>
+
+            <label for="name">您的姓名 <span class="required">*</span></label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">您的email <span class="required">*</span></label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="phone">您的電話 <span class="required">*</span></label>
+            <input type="text" id="phone" name="phone" required>
+
+            <label for="message">您的留言 <span class="required">*</span></label>
+            <textarea id="message" name="message" rows="5" required></textarea>
+
+            <label for="referral">從哪裡認識我們？</label>
+            <input type="text" id="referral" name="referral">
+
+            <label for="captcha">驗證碼 <span class="required">*</span></label>
+            <input type="text" id="captcha" name="captcha" required>
+
+            <button type="submit" class="submit-btn">確認送出</button>
+        </form>
+        <p class="note">*為必填項</p>
+        <p class="note">如有任何問題，請聯絡客服信箱：<a href="mailto:services@mail.cloudw2p.com">services@mail.cloudw2p.com</a>
+        </p>
+        <p class="contact-info">客服信箱：<a
+                href="mailto:services@mail.cloudw2p.com">services@mail.cloudw2p.com</a><br>客服電話：02-2266-8944</p>
+    </div>
+
+
+
+</body>
+
+</html>

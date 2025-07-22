@@ -1,0 +1,126 @@
+<script>
+    // ▲ 天選單右上_索取紙樣_幫助中心_聯絡專人 - 連結重設 
+    var base_url = window.location.origin;  // 獲取當前頁面的基礎 URL 
+    // 取得 索取紙樣_幫助中心_聯絡專人 (因手機板也有相同元素所以要用querySelectorAll)  
+    const requestSampleLinks = document.querySelectorAll('.aw-menu .request-sample');
+    const helpCenterLinks = document.querySelectorAll('.aw-menu .help-center');
+    const serviceLinks = document.querySelectorAll('.aw-menu .service');
+    // 設置新的 href 屬性  
+    requestSampleLinks.forEach(link => {
+        link.href = `${base_url}/request_papersample`;
+    });
+    helpCenterLinks.forEach(link => {
+        link.href = `${base_url}/help-center`;
+    });
+    serviceLinks.forEach(link => {
+        link.href = `${base_url}/contactus`;
+    });
+
+
+    // ▲ 新舊站網域交換_重新導向_網址設定
+    const redirectMap = {
+        '/#/standard/28': '/sticker-label.html',
+        // 更多對應規則...
+    };
+    // 重新導向
+    (function redirectBasedOnUrl() {
+        const currentPath = window.location.pathname + window.location.hash; // 獲取當前路徑和錨點
+        const targetPath = redirectMap[currentPath]; // 查找對應的目標路徑
+        if (targetPath) {
+            const newUrl = window.location.origin + targetPath; // 構建完整 URL
+            window.location.href = newUrl; // 執行跳轉
+        }
+    })();
+
+
+    // ▲ 商品頁-出貨時間提示文字
+    document.addEventListener("DOMContentLoaded", function () {
+        // 設定 監控MutationObserver
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                // 當目標出現
+                if (
+                    mutation.type === "childList" &&
+                    mutation.target.id === "expected-ship-time"
+                ) {
+                    const shipTimeElement = document.getElementById("expected-ship-time");
+                    if (shipTimeElement) {
+                        updateShipTime(shipTimeElement); // 更新
+                        observer.disconnect(); // 關閉監控
+                    }
+                }
+            }
+        });
+        // 開始監控 body節點，等待目標節點出現
+        observer.observe(document.body, { childList: true, subtree: true });
+
+        
+        // 獲取當前日期、定義三個時段的起始日
+        const now = new Date();
+        const phase1Start = new Date("2024-12-30");
+        const phase2Start = new Date("2025-01-22");
+        const phase3Start = new Date("2025-02-03");
+
+        // 定義一個函數來更新出貨時間提示文字
+        function updateShipTime(shipTimeElement) {
+            console.log('更新出貨時間提示文字')
+            if (now >= phase1Start && now < phase2Start) {
+                // 時段 1
+                shipTimeElement.innerHTML = shipTimeElement.innerHTML.replace(
+                    '<br>※如遇國定假日、補班補休等特殊假日、<br>或訂單內包含特殊加工與特殊紙材時，將會延後出貨時間。',
+                    ""
+                );
+                shipTimeElement.innerHTML +=
+                    "<br>※過年前最後下單與出貨時間請詳見首頁BN公告";
+            } else if (now >= phase2Start && now < phase3Start) {
+                // 時段 2
+                shipTimeElement.innerHTML = shipTimeElement.innerHTML.replace(
+                    '<br>※如遇國定假日、補班補休等特殊假日、<br>或訂單內包含特殊加工與特殊紙材時，將會延後出貨時間。',
+                    ""
+                );
+                shipTimeElement.innerHTML +=
+                    "<br>※即日起至過年期間訂單將於2/3起開始製作並依序出貨";
+            } else if (now >= phase3Start) {
+                // 時段 3
+                // 這裡可以加入其他邏輯
+            }
+        }
+
+
+    });
+
+
+    // ▲ 跑馬燈 設定起訖時間 (無用)
+    document.addEventListener("DOMContentLoaded", function () {
+        // 定義開啟與關閉的時間
+
+        // 獲取目標元素  
+        const bulletinElement = document.querySelector(".yfp-15off-bulletin");
+
+        // 初始化時隱藏元素
+        if (bulletinElement) {
+            bulletinElement.hidden = true;
+        }
+
+        // 定期檢查時間  
+        const checkVisibility = () => {
+            const now = new Date(); // 獲取當前時間  
+
+            if (bulletinElement) {
+                if (now >= YFP_Bulletin_15off_openTime && now < YFP_Bulletin_15off_closeTime) {
+                    // 如果當前時間在範圍內，顯示元素
+                    bulletinElement.hidden = false;
+                } else {
+                    // 如果當前時間不在範圍內，隱藏元素
+                    bulletinElement.hidden = true;
+                }
+            }
+        };
+
+        // 立即檢查一次 (首次執行)  
+        checkVisibility();
+
+    });
+
+
+</script>
