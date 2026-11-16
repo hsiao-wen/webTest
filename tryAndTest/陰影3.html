@@ -15,14 +15,30 @@
                     #999 40%,
                     #000 90%,
                     #666 95%,
-                    #999 100% 
-                    );
+                    #999 100%);
         }
     </style>
 </head>
 
 <body>
     <div></div>
+    <script>
+        for (let i = input.length - 1; i >= 0; i--) {
+            const message = input[i];
+            if (message.subject && message.subject.includes('Garmin T5')) {
+                if (message.attachments && Array.isArray(message.attachments)) { // 若信中沒附件，message.attachments會是空陣列
+                    for (const attachment of message.attachments) {
+                        if (attachment.filename && typeof attachment.filename === 'string' && attachment.filename.endsWith('.csv')) {
+                            api.write('Garmin_Job_Requirement.csv', attachment.content);
+                            break; // 找到最新的符合條件附件後，跳出 attachments 迴圈
+                        }
+                    }
+                    break; // 找到最新符合條件的 message，跳出 input 迴圈，不再處理更舊訊息
+                }
+            }
+        }
+
+    </script>
 </body>
 
 </html>

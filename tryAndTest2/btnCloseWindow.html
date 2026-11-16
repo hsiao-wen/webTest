@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關閉視窗範例</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        .btn-close {
+            padding: 12px 24px;
+            font-size: 16px;
+            color: white;
+            background-color: #ea4335; /* 警示/關閉常用的紅色 */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .btn-close:hover {
+            background-color: #d93025;
+        }
+        .btn-close:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 點擊時執行 JavaScript 的 window.close() -->
+    <button class="btn-close" onclick="window.close()">
+        關閉當前網頁
+    </button>
+
+</body>
+</html>
