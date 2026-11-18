@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>刮刮卡活動</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#f5f5f5;
+    font-family:"Microsoft JhengHei", sans-serif;
+}
+
+.hidden{
+    display:none !important;
+}
+
+/* ===================== */
+/* 選卡頁 */
+/* ===================== */
+
+#selectPage{
+    max-width:900px;
+    margin:auto;
+    padding:30px 20px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:24px;
+}
+
+.card-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+}
+
+.card{
+    border-radius:8px;
+    overflow:hidden;
+    cursor:pointer;
+    background:white;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.15);
+
+    transition:
+        transform .25s ease,
+        opacity .4s ease;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+}
+
+.card img{
+    display:block;
+    width:100%;
+}
+
+.fade{
+    opacity:0;
+}
+
+.selected-origin{
+    visibility:hidden;
+}
+
+/* ===================== */
+/* modal */
+/* ===================== */
+
+.modal-mask{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:9999;
+}
+
+.modal{
+    width:320px;
+    background:white;
+    border-radius:12px;
+    padding:24px;
+    text-align:center;
+}
+
+.modal-actions{
+    margin-top:20px;
+}
+
+.modal button{
+    border:none;
+    border-radius:8px;
+    padding:10px 24px;
+    cursor:pointer;
+}
+
+.btn-cancel{
+    background:#ddd;
+}
+
+.btn-confirm{
+    background:#ff9800;
+    color:white;
+}
+
+/* ===================== */
+/* 放大動畫與遊戲卡片：共用相同外觀，確保交接時無感 */
+/* ===================== */
+.zoom-card,
+.scratch-wrapper{
+    border-radius:8px;
+    overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+
+.zoom-card{
+    position:fixed;
+    z-index:10000;
+    margin:0 !important;
+    pointer-events:none;
+}
+
+.zoom-card img{
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:fill;
+}
+
+/* ===================== */
+/* 遊戲頁 */
+/* ===================== */
+
+#gamePage{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:24px 20px;
+}
+
+.game-content{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+#gameTitle{
+    margin:0 0 20px;
+    text-align:center;
+}
+
+.scratch-wrapper{
+    width:min(560px,90vw);
+    position:relative;
+    flex:none;
+}
+
+/* 動畫期間保留版面尺寸，只隱藏底下的正式卡片 */
+.scratch-wrapper.transition-hidden{
+    visibility:hidden;
+}
+
+.base-image{
+    display:block;
+    width:100%;
+    height:auto;
+}
+
+.prize-layer{
+    position:absolute;
+    left:16.11%;
+    top:58.19%;
+    width:67.62%;
+    height:33.55%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    padding:12px;
+    font-size:clamp(18px,3vw,28px);
+    font-weight:bold;
+    color:#FFF;
+    z-index:1;
+}
+
+#scratchCanvas{
+    position:absolute;
+    left:19.6%;
+    top:58.7%;
+    width:58.6%;
+    height:29%;
+    border-radius:0px;
+    z-index:2;
+    touch-action:none;
+}
+
+.tip{
+    text-align:center;
+    color:#666;
+    margin-top:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- 選卡頁 -->
+
+<div id="selectPage">
+
+    <h1>請選擇一張刮刮卡</h1>
+
+    <div class="card-grid" id="cardGrid"></div>
+
+</div>
+
+<!-- Modal -->
+
+<div id="confirmModal" class="modal-mask hidden">
+
+    <div class="modal">
+
+        <h3>確定選擇這張刮刮卡嗎？</h3>
+
+        <p>確認後不可更換</p>
+
+        <div class="modal-actions">
+
+            <button
+                id="cancelBtn"
+                class="btn-cancel">
+                取消
+            </button>
+
+            <button
+                id="confirmBtn"
+                class="btn-confirm">
+                確定
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- 遊戲頁 -->
+
+<div id="gamePage" class="hidden">
+    <div class="game-content">
+        <h1 id="gameTitle">請開始刮開</h1>
+
+        <div class="scratch-wrapper transition-hidden" id="scratchWrapper">
+            <img
+                src="../img/刮刮卡圖面2.png"
+                class="base-image"
+                alt="刮刮卡">
+
+            <div id="prizeText" class="prize-layer"></div>
+            <canvas id="scratchCanvas"></canvas>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+const prize = {
+    id:1,
+    name:"7-ELEVEN 商品卡 100元"
+};
+
+let selectedCard = null;
+let locked = false;
+
+const cardGrid = document.getElementById("cardGrid");
+const modal = document.getElementById("confirmModal");
+
+/* ==================== */
+/* 建立9張卡 */
+/* ==================== */
+
+for(let i=1;i<=9;i++){
+
+    const card = document.createElement("div");
+
+    card.className = "card";
+
+    card.innerHTML = `
+        <img
+            src="../img/刮刮卡圖面1.png"
+            alt="刮刮卡">
+    `;
+
+    card.addEventListener("click",()=>{
+
+        if(locked) return;
+
+        selectedCard = card;
+
+        modal.classList.remove("hidden");
+    });
+
+    cardGrid.appendChild(card);
+}
+
+/* ==================== */
+/* Modal */
+/* ==================== */
+
+cancelBtn.addEventListener(
+    "click",
+    ()=>{
+        modal.classList.add("hidden");
+    }
+);
+
+confirmBtn.addEventListener(
+    "click",
+    async ()=>{
+
+        locked = true;
+
+        modal.classList.add("hidden");
+
+        document.getElementById("gameTitle").textContent = "請開始刮開";
+
+        await playSelectAnimation();
+
+        /*
+           未來改成：
+
+           const prize =
+             await fetch("/api/result")
+             .then(r=>r.json());
+        */
+
+        document
+            .getElementById("prizeText")
+            .textContent =
+            prize.name;
+
+        // 正式卡片已在動畫最後一幀接手顯示；接著初始化銀漆 Canvas
+        requestAnimationFrame(() => initScratch());
+    }
+);
+
+/* ==================== */
+/* 放大動畫 */
+/* ==================== */
+
+async function playSelectAnimation(){
+
+    document.querySelectorAll(".card").forEach(card => {
+        if(card !== selectedCard) card.classList.add("fade");
+    });
+
+    const wrapper = document.getElementById("scratchWrapper");
+    const baseImage = wrapper.querySelector(".base-image");
+
+    // 確保底圖已載入，避免目標卡片高度尚未計算完成。
+    if(!baseImage.complete || !baseImage.naturalWidth){
+        await new Promise((resolve, reject) => {
+            baseImage.addEventListener("load", resolve, { once:true });
+            baseImage.addEventListener("error", reject, { once:true });
+        });
+    }
+
+    // 1. 必須先在選卡頁仍可見時，記錄動畫起點。
+    const start = selectedCard.getBoundingClientRect();
+
+    // 2. 先將選卡頁移出排版，再顯示遊戲頁。
+    //    兩個動作在同一個 JS 執行流程內完成，不會讓使用者看到中間狀態。
+    document.getElementById("selectPage").classList.add("hidden");
+    document.getElementById("gamePage").classList.remove("hidden");
+
+    // 3. 強制瀏覽器完成版面計算，取得遊戲頁中正式刮刮卡的正確位置。
+    const target = wrapper.getBoundingClientRect();
+
+    const clone = selectedCard.cloneNode(true);
+    clone.classList.add("zoom-card");
+
+    Object.assign(clone.style, {
+        left: start.left + "px",
+        top: start.top + "px",
+        width: start.width + "px",
+        height: start.height + "px",
+        transform: "none",
+        transition: "none"
+    });
+
+    document.body.appendChild(clone);
+    selectedCard.classList.add("selected-origin");
+
+    // 等待瀏覽器繪製起始狀態，再啟動動畫。
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const easing = "cubic-bezier(.2,.8,.2,1)";
+    clone.style.transition = `left .85s ${easing}, top .85s ${easing}, width .85s ${easing}, height .85s ${easing}`;
+    clone.style.left = target.left + "px";
+    clone.style.top = target.top + "px";
+    clone.style.width = target.width + "px";
+    clone.style.height = target.height + "px";
+
+    await new Promise(resolve => setTimeout(resolve, 900));
+
+    // 動畫複製層與正式卡片的位置、尺寸及外觀一致，直接交接顯示。
+    clone.remove();
+    wrapper.classList.remove("transition-hidden");
+}
+
+/* ==================== */
+/* 刮刮卡 */
+/* ==================== */
+
+function initScratch(){
+
+    const canvas = document.getElementById("scratchCanvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    const rect = canvas.getBoundingClientRect();
+
+    // Canvas 的 CSS 尺寸與實際像素尺寸分開設定，並支援高 DPI 螢幕
+    const width = rect.width;
+    const height = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const silver = ctx.createLinearGradient(0, 0, width, height);
+    silver.addColorStop(0, "#eeeeee");
+    silver.addColorStop(.5, "#bdbdbd");
+    silver.addColorStop(1, "#f6f6f6");
+
+    ctx.fillStyle = silver;
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.fillStyle = "#666";
+    ctx.font = "bold 18px Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("請開始刮開", width / 2, height / 2);
+
+    let drawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let revealed = false;
+
+    function getPos(e){
+        const bounds = canvas.getBoundingClientRect();
+        return {
+            x: (e.clientX - bounds.left) * (width / bounds.width),
+            y: (e.clientY - bounds.top) * (height / bounds.height)
+        };
+    }
+
+    function erase(x, y){
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.lineWidth = 44;
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        // 點擊時也能刮除，不必先移動滑鼠
+        ctx.beginPath();
+        ctx.arc(x, y, 22, 0, Math.PI * 2);
+        ctx.fill();
+        lastX = x;
+        lastY = y;
+    }
+
+    function checkReveal(){
+        if(revealed) return;
+
+        // getImageData 使用 Canvas 實際像素尺寸（包含 DPR）
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let transparentPixels = 0;
+        for(let i = 3; i < pixels.length; i += 4){
+            if(pixels[i] === 0) transparentPixels++;
+        }
+
+        const ratio = transparentPixels / (canvas.width * canvas.height);
+        if(ratio >= 0.6){
+            ctx.clearRect(0, 0, width, height);
+            revealed = true;
+            document.getElementById("gameTitle").textContent = "恭喜獲獎";
+        }
+    }
+
+    canvas.addEventListener("pointerdown", e => {
+        if(revealed) return;
+        e.preventDefault();
+        drawing = true;
+        canvas.setPointerCapture(e.pointerId);
+        const p = getPos(e);
+        lastX = p.x;
+        lastY = p.y;
+        erase(p.x, p.y);
+    });
+
+    canvas.addEventListener("pointermove", e => {
+        if(!drawing || revealed) return;
+        const p = getPos(e);
+        erase(p.x, p.y);
+    });
+
+    function stopDrawing(){
+        if(!drawing) return;
+        drawing = false;
+        checkReveal();
+    }
+
+    canvas.addEventListener("pointerup", stopDrawing);
+    canvas.addEventListener("pointercancel", stopDrawing);
+    canvas.addEventListener("lostpointercapture", stopDrawing);
+}
+
+
+</script>
+
+</body>
+</html>
