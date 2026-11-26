@@ -22,6 +22,14 @@ body{
     overflow-x:hidden;
 }
 .hidden{display:none !important}
+/* 避免手機長按跳出「儲存圖片」、選取文字或拖曳圖片 */
+.card-grid,.card,.face,.scratch-wrapper,.zoom-card{
+    -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
+}
+.face img,.base-image,.zoom-card img{
+    pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;
+}
+#scratchCanvas{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20000}
 
 h1{
@@ -693,8 +701,11 @@ function buildCards(){
 
     function choose(i){
         selectedCard = cards[i]; selectedIndex = i;
-        $("confirmModal").classList.remove("hidden");
-        $("confirmBtn").focus();
+        const m = $("confirmModal");
+        m.style.pointerEvents = "none";                  // 手指放開後瀏覽器補發的 click 會落在新出現的按鈕上
+        m.classList.remove("hidden");
+        setTimeout(() => { m.style.pointerEvents = ""; }, 500);
+        $("confirmBtn").focus({ preventScroll:true });
     }
 }
 
@@ -719,6 +730,9 @@ function buildCards(){
         toast(err.message);
     }
 })();
+
+/* ---- 禁止長按選單（儲存圖片等） ---- */
+for(const id of ["cardGrid", "gamePage"]) $(id).addEventListener("contextmenu", e => e.preventDefault());
 
 /* ---- Modal ---- */
 $("cancelBtn").addEventListener("click", () => $("confirmModal").classList.add("hidden"));
