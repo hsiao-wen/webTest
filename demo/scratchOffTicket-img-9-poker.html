@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>刮刮卡活動</title>
+
+<style>
+:root{
+    /* 以下預設值會被 JS 依 CONFIG.theme 覆蓋 */
+    --gold:#ffd66b; --gold-deep:#d9962b; --gold-light:#fff3c4; --gold-rgb:255 214 107;
+    --bg-1:#7a0f12; --bg-2:#3b0508; --bg-1-rgb:122 15 18; --bg-2-rgb:59 5 8;
+    --panel-1:#8e1a1d; --panel-2:#4a070a; --mask-rgb:20 0 2;
+    --ink:#fff6dc; --on-gold:#4a070a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;overflow-x:hidden}
+body{
+    font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;
+    color:var(--ink);
+    background:radial-gradient(120% 90% at 50% 0%,var(--bg-1),var(--bg-2) 70%) fixed;
+    overflow-x:hidden;
+}
+.hidden{display:none !important}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20000}
+
+h1{
+    margin:0;text-align:center;font-weight:900;letter-spacing:.12em;
+    font-size:clamp(26px,5vw,40px);
+    background:linear-gradient(180deg,var(--gold-light),var(--gold) 45%,var(--gold-deep));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 3px 0 rgba(0,0,0,.35));
+}
+.sub{text-align:center;margin:8px 0 0;opacity:.75;font-size:14px;letter-spacing:.2em}
+
+#muteBtn{
+    position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;z-index:10001;
+    width:42px;height:42px;border-radius:50%;border:1px solid rgb(var(--gold-rgb) / .5);
+    background:rgba(0,0,0,.35);color:var(--gold);font-size:18px;cursor:pointer;
+    backdrop-filter:blur(6px);
+}
+
+/* ========== 選卡頁 ========== */
+#selectPage{
+    max-width:920px;margin:auto;padding:28px 16px 36px;overflow-x:clip;
+    min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+}
+.card-grid{
+    position:relative;margin:24px auto 0;width:100%;touch-action:pan-y;
+    user-select:none;-webkit-user-select:none;
+}
+.card{
+    position:absolute;cursor:pointer;border-radius:10px;
+    transform-origin:50% calc(100% + var(--cw) * var(--radius,2.4));
+    transform:rotate(var(--ang,0deg)) translateY(calc(var(--up,0) * -100%));
+    transition:transform .28s cubic-bezier(.2,.9,.3,1.2),opacity .45s ease,filter .28s;
+    animation:deal .8s cubic-bezier(.2,.9,.3,1.1) backwards;
+    animation-delay:calc(var(--i)*60ms);
+    z-index:var(--z,1);
+    -webkit-tap-highlight-color:transparent;
+}
+@keyframes deal{
+    from{opacity:0;transform:rotate(0deg) translateY(40px) scale(.8)}
+}
+.card.up{filter:brightness(1.08)}
+.tilt{
+    position:relative;border-radius:10px;overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,.5),0 0 0 1px rgb(var(--gold-rgb) / .35);
+    transition:box-shadow .25s ease;
+}
+.card.up .tilt{box-shadow:0 18px 36px rgba(0,0,0,.55),0 0 26px rgb(var(--gold-rgb) / .55),0 0 0 1px var(--gold)}
+.face{position:relative;width:100%;height:100%}
+.face img{display:block;width:100%;height:100%;object-fit:fill}
+.silver-cover{position:absolute;background-size:100% 100%;pointer-events:none}
+.silver-cover.debug{outline:2px solid #f00}
+.tilt::after{ /* 金色掃光 */
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);
+    transform:translateX(-120%);
+    animation:sweep 4.5s ease-in-out infinite;
+    animation-delay:calc(var(--i)*.35s + 1s);
+}
+@keyframes sweep{0%,70%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.card.fade{opacity:0;filter:blur(2px)}
+.card.selected-origin{visibility:hidden}
+
+/* ========== Modal ========== */
+.modal-mask{
+    position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+    background:rgb(var(--mask-rgb) / .7);backdrop-filter:blur(6px);
+}
+.modal{
+    width:min(340px,88vw);padding:28px 24px;text-align:center;border-radius:16px;
+    background:linear-gradient(160deg,var(--panel-1),var(--panel-2));
+    border:1px solid var(--gold);box-shadow:0 0 40px rgb(var(--gold-rgb) / .25);
+    animation:pop .35s cubic-bezier(.2,1.2,.4,1);
+}
+@keyframes pop{from{opacity:0;transform:scale(.85)}}
+.modal h3{margin:0 0 8px;font-size:20px;color:var(--gold)}
+.modal p{margin:0;opacity:.8}
+.modal-actions{margin-top:22px;display:flex;gap:12px;justify-content:center}
+.modal button{
+    border:none;border-radius:999px;padding:11px 28px;cursor:pointer;
+    font:inherit;font-weight:700;
+}
+.btn-cancel{background:rgba(255,255,255,.14);color:var(--ink)}
+.btn-confirm{background:linear-gradient(180deg,var(--gold-light),var(--gold-deep));color:var(--on-gold)}
+.modal button:disabled{opacity:.6;cursor:wait}
+.modal button:focus-visible,#muteBtn:focus-visible,.again:focus-visible{outline:2px solid #fff;outline-offset:2px}
+
+/* ========== 放大動畫與遊戲卡片 ========== */
+.zoom-card,.scratch-wrapper{
+    border-radius:10px;overflow:hidden;
+    box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 0 1px rgb(var(--gold-rgb) / .5);
+}
+.zoom-card{position:fixed;z-index:10000;margin:0;pointer-events:none}
+.zoom-card img{display:block;width:100%;height:100%;object-fit:fill}
+
+/* ========== 遊戲頁 ========== */
+#gamePage{min-height:100vh;min-height:100svh;display:flex;justify-content:center;align-items:center;padding:24px 16px}
+.game-content{width:100%;display:flex;flex-direction:column;align-items:center}
+#gameTitle{margin-bottom:18px;transition:transform .4s cubic-bezier(.2,1.4,.4,1)}
+#gameTitle.win{transform:scale(1.18)}
+
+.scratch-wrapper{width:min(560px,90vw,calc(100svh - 240px));position:relative;flex:none}
+.scratch-wrapper.transition-hidden{visibility:hidden}
+.scratch-wrapper.glow{animation:glow 1.6s ease-in-out infinite alternate}
+@keyframes glow{to{box-shadow:0 24px 70px rgba(0,0,0,.6),0 0 60px 8px rgb(var(--gold-rgb) / .7),0 0 0 2px var(--gold)}}
+.base-image{display:block;width:100%;height:auto}
+
+.prize-layer{
+    position:absolute;z-index:1;display:flex;flex-direction:column;
+    justify-content:center;align-items:center;text-align:center;padding:8px;
+    background:radial-gradient(90% 120% at 50% 50%,rgb(var(--bg-1-rgb) / .85),rgb(var(--bg-2-rgb) / .92));
+    box-shadow:inset 0 0 0 2px rgb(var(--gold-rgb) / .7);
+}
+.prize-layer .small{font-size:clamp(11px,2.2vw,15px);letter-spacing:.3em;color:var(--gold)}
+.prize-layer .name{
+    font-weight:900;font-size:clamp(17px,3.6vw,28px);line-height:1.3;color:#fff;
+    text-shadow:0 2px 0 rgba(0,0,0,.4),0 0 18px rgb(var(--gold-rgb) / .7);
+}
+.prize-layer.show .name,.prize-layer.show .small{animation:prizeIn .7s cubic-bezier(.2,1.5,.4,1) both}
+@keyframes prizeIn{from{opacity:0;transform:scale(.4)}}
+
+#scratchCanvas{
+    position:absolute;z-index:2;touch-action:none;cursor:grab;
+    transition:opacity .6s ease;
+}
+#scratchCanvas.gone{opacity:0;pointer-events:none}
+
+.progress{width:min(360px,70vw);height:6px;border-radius:99px;margin-top:18px;background:rgba(255,255,255,.15);overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold-deep),var(--gold-light));transition:width .15s}
+.tip{margin-top:10px;font-size:14px;opacity:.7;letter-spacing:.15em;min-height:21px}
+.again{
+    margin-top:16px;border:1px solid var(--gold);background:transparent;color:var(--gold);
+    border-radius:999px;padding:10px 28px;font:inherit;font-weight:700;cursor:pointer;
+    animation:pop .4s both;
+}
+
+#toast{
+    position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translateX(-50%);
+    z-index:30000;background:#fff;color:var(--bg-1);padding:12px 20px;border-radius:10px;
+    font-weight:700;box-shadow:0 8px 30px rgba(0,0,0,.4);max-width:90vw;
+}
+
+@media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<canvas id="fx"></canvas>
+<button id="muteBtn" aria-label="切換音效" title="切換音效">🔊</button>
+
+<!-- 選卡頁 -->
+<div id="selectPage">
+    <h1 id="selectTitle"></h1>
+    <p class="sub" id="selectSub"></p>
+    <div class="card-grid" id="cardGrid"></div>
+</div>
+
+<!-- 確認視窗 -->
+<div id="confirmModal" class="modal-mask hidden" role="dialog" aria-modal="true">
+    <div class="modal">
+        <h3 id="modalTitle"></h3>
+        <p id="modalText"></p>
+        <div class="modal-actions">
+            <button id="cancelBtn" class="btn-cancel">取消</button>
+            <button id="confirmBtn" class="btn-confirm">確定</button>
+        </div>
+    </div>
+</div>
+
+<!-- 遊戲頁 -->
+<div id="gamePage" class="hidden">
+    <div class="game-content">
+        <h1 id="gameTitle"></h1>
+        <div class="scratch-wrapper transition-hidden" id="scratchWrapper">
+            <img class="base-image" id="baseImage" alt="刮刮卡">
+            <div id="prizeLayer" class="prize-layer"></div>
+            <canvas id="scratchCanvas"></canvas>
+        </div>
+        <div class="progress"><i id="progressBar"></i></div>
+        <div class="tip" id="tip"></div>
+        <button class="again hidden" id="againBtn">再玩一次（展示用）</button>
+    </div>
+</div>
+
+<div id="toast" class="hidden" role="alert"></div>
+
+<script>
+/* =====================================================================
+ * 1. 活動設定 CONFIG —— 換活動只需要改這一區
+ * ===================================================================== */
+const CONFIG = {
+    /* 文案 */
+    text:{
+        selectTitle:"請選擇一張刮刮卡",
+        selectSub:"每人限刮一張，選定後不可更換",
+        confirmTitle:"確定選擇這張刮刮卡嗎？",
+        confirmText:"確認後不可更換",
+        playTitle:"用手指刮開好運",
+        winTitle:"恭喜獲獎",
+        loseTitle:"再接再厲",
+        winLabel:"恭喜獲得",
+        loseLabel:"本次未中獎",
+        tip:"在銀色區域來回刮動",
+        errorTip:"連線發生問題，請稍後再試"
+    },
+
+    /* 活動底圖：只需要這一張（不含銀漆區），銀漆由程式自動生成 */
+    image:"../img/刮刮卡圖面4.png",
+
+    /* 銀漆區位置：以「圖片寬高的百分比」表示，圖片換了只需微調這四個數字
+       x/y = 左上角位置，w/h = 寬高。
+       調整時可把 debugArea 改成 true，銀漆區會出現紅框方便對位 */
+    scratchArea:{ x:7.6, y:50.4, w:84.5, h:40 },
+    debugArea:false,
+
+    /* 銀漆外觀 */
+    silver:{ text:"刮 開 有 獎" },
+
+    /* 玩法 */
+    cardCount:9,        // 卡片數量
+    fan:{
+        spread:64,      // 扇形總張角（度），越大越開
+        radius:2.4,     // 旋轉中心距離（以卡寬為單位），越小弧度越明顯
+        lift:.28,       // 指到的那張抬起高度（以卡高為單位）
+        neighbor:.45,   // 左右相鄰卡牌被帶動的比例（0~1）
+        maxCardWidth:200 // 單張卡最大寬度 px（畫面較窄時會自動縮小，確保整個扇形放得下）
+    },
+    revealRatio:0.55,   // 刮開多少比例後自動全開（0~1）
+    brushSize:44,       // 刮除筆刷直徑 px
+    sound:true,         // 是否啟用音效（使用者可自行關閉）
+
+    /* 配色：只需要兩個顏色，其餘（背景、面板、按鈕、彩帶…）自動配出
+       mode:"auto"   → 從底圖自動取色（換底圖不用改任何顏色）
+       mode:"manual" → 使用下面的 base / accent
+       註：auto 需要讀取圖片像素；直接用 file:// 開啟檔案時瀏覽器可能會擋，
+           此時會自動改用 manual 的顏色，放到網站伺服器上就能正常取色。
+       自動取到的顏色會印在瀏覽器 Console（[theme]），想固定就抄進 manual */
+    theme:{
+        mode:"auto",
+        base:"#7a0f12",     // 主色：背景、獎項面板、對話框
+        accent:"#ffd66b"    // 點綴色：標題、邊框、按鈕、發光、彩帶
+    },
+
+    /* 後端 API。mock:true 時使用下方假資料，上線改成 false 即可 */
+    api:{
+        mock:true,
+        drawUrl:"/api/scratch/draw",       // POST：抽獎，回傳中獎結果
+        revealedUrl:"/api/scratch/revealed",// POST：回報使用者已刮開（可選）
+        headers:{ "Content-Type":"application/json" /*, "Authorization":"Bearer ..." */ },
+        timeoutMs:8000
+    }
+};
+
+/* =====================================================================
+ * 2. 後端介面 API —— 串接時只需要改這一區
+ *
+ * drawPrize(cardIndex) 需回傳：
+ *   {
+ *     ticketId: "T20260101-0001",         // 本次抽獎單號（防重複、回報用）
+ *     win: true,                           // 是否中獎
+ *     prize: { id:1, name:"商品卡 100元", desc:"請於 30 天內領取" }
+ *   }
+ * 未中獎：win:false，prize 可省略。
+ * 建議由後端在此刻決定結果並記錄，前端只負責呈現，避免被竄改。
+ * ===================================================================== */
+const MOCK_PRIZES = [
+    { win:true,  prize:{ id:1, name:"7-ELEVEN 商品卡 100元" } }
+    // 想測試未中獎：加入 { win:false }
+];
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function request(url, body){
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), CONFIG.api.timeoutMs);
+    try{
+        const res = await fetch(url, {
+            method:"POST", headers:CONFIG.api.headers,
+            body:JSON.stringify(body), signal:ctrl.signal
+        });
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        return await res.json();
+    }finally{ clearTimeout(t); }
+}
+
+async function drawPrize(cardIndex){
+    if(CONFIG.api.mock){
+        await sleep(400);
+        const r = MOCK_PRIZES[Math.floor(Math.random() * MOCK_PRIZES.length)];
+        return { ticketId:"MOCK-" + Date.now(), ...r };
+    }
+    return request(CONFIG.api.drawUrl, { cardIndex });
+}
+
+async function reportRevealed(result){
+    if(CONFIG.api.mock) return console.log("[mock] revealed", result.ticketId);
+    try{ await request(CONFIG.api.revealedUrl, { ticketId:result.ticketId }); }
+    catch(e){ console.warn("回報失敗", e); }   // 不影響使用者畫面
+}
+
+/* =====================================================================
+ * 3. 以下為程式主體，一般不需修改
+ * ===================================================================== */
+const $ = id => document.getElementById(id);
+const reduceMotion = matchMedia("(prefers-reduced-motion:reduce)").matches;
+const T = CONFIG.text;
+
+/* ---- 主題：由 base / accent 兩色推導整套配色 ---- */
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const Color = {
+    hexToHsl(hex){
+        let h = hex.replace("#", "");
+        if(h.length === 3) h = [...h].map(c => c + c).join("");
+        const n = parseInt(h, 16);
+        return Color.rgbToHsl([n >> 16 & 255, n >> 8 & 255, n & 255]);
+    },
+    rgbToHsl([r, g, b]){
+        r /= 255; g /= 255; b /= 255;
+        const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2;
+        let h = 0, s = 0;
+        if(mx !== mn){
+            const d = mx - mn;
+            s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn);
+            h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+            h *= 60;
+        }
+        return [h, s, l];
+    },
+    hsl(h, s, l){   // → [r,g,b]
+        h = ((h % 360) + 360) % 360; s = clamp(s, 0, 1); l = clamp(l, 0, 1);
+        const a = s * Math.min(l, 1 - l);
+        const f = n => { const k = (n + h / 30) % 12; return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); };
+        return [f(0), f(8), f(4)].map(v => Math.round(v * 255));
+    },
+    css:c => `rgb(${c[0]},${c[1]},${c[2]})`,
+    triplet:c => `${c[0]} ${c[1]} ${c[2]}`,
+    hex:c => "#" + c.map(v => v.toString(16).padStart(2, "0")).join("")
+};
+
+const THEME = { gold:"#ffd66b", goldLight:"#fff3c4", confetti:["#ffd66b", "#fff", "#ff4d4f"] };
+
+function applyTheme([bh, bs], [ah, as]){
+    const H = Color.hsl, C = Color.css, R = Color.triplet;
+    const S  = bs < .12 ? bs : clamp(bs, .35, .9);    // 灰階底圖就保持中性
+    const aS = as < .12 ? as : clamp(as, .6, 1);
+    const bg1 = H(bh, S, .24), bg2 = H(bh, S, .10);
+    const gold = H(ah, aS, .68), goldDeep = H(ah, aS, .45), goldLight = H(ah, Math.min(aS, .9), .86);
+    const v = document.documentElement.style;
+    v.setProperty("--bg-1", C(bg1));          v.setProperty("--bg-2", C(bg2));
+    v.setProperty("--bg-1-rgb", R(bg1));      v.setProperty("--bg-2-rgb", R(bg2));
+    v.setProperty("--panel-1", C(H(bh, S, .28))); v.setProperty("--panel-2", C(H(bh, S, .13)));
+    v.setProperty("--mask-rgb", R(H(bh, S, .04)));
+    v.setProperty("--gold", C(gold));         v.setProperty("--gold-deep", C(goldDeep));
+    v.setProperty("--gold-light", C(goldLight)); v.setProperty("--gold-rgb", R(gold));
+    v.setProperty("--ink", C(H(ah, .8, .94)));    v.setProperty("--on-gold", C(bg2));
+    THEME.gold = C(gold); THEME.goldLight = C(goldLight);
+    THEME.confetti = [gold, goldLight, H(bh, .9, .55), [255, 255, 255], H(ah + 150, .8, .6), H(ah - 40, .9, .6)].map(C);
+}
+
+/* 從底圖取色：主色 = 面積最大的飽和色相；點綴色 = 明亮飽和色中最突出的色相 */
+function extractTheme(img){
+    const N = 64, cv = document.createElement("canvas");
+    cv.width = cv.height = N;
+    const x = cv.getContext("2d", { willReadFrequently:true });
+    x.drawImage(img, 0, 0, N, N);
+    const d = x.getImageData(0, 0, N, N).data;     // file:// 下可能丟出 SecurityError
+    const px = [];
+    for(let i = 0; i < d.length; i += 4) px.push(Color.rgbToHsl([d[i], d[i + 1], d[i + 2]]));
+    const pick = (filter, weight) => {
+        const b = new Float32Array(36), sat = new Float32Array(36);
+        for(const [h, s, l] of px){
+            if(!filter(s, l)) continue;
+            const k = Math.floor(h / 10) % 36, w = weight(s, l);
+            b[k] += w; sat[k] += s * w;
+        }
+        let best = -1, bestScore = 0;
+        for(let k = 0; k < 36; k++){
+            const sc = b[(k + 35) % 36] + 2 * b[k] + b[(k + 1) % 36];   // 相鄰色相合併計分
+            if(sc > bestScore){ bestScore = sc; best = k; }
+        }
+        return best < 0 ? null : [best * 10 + 5, sat[best] / b[best]];
+    };
+    const base = pick((s, l) => s > .25 && l > .1 && l < .7, s => s) || [0, 0];
+    const acc  = pick((s, l) => s > .35 && l > .5 && l < .9, (s, l) => s * l) || [(base[0] + 180) % 360, .7];
+    return { base, acc };
+}
+
+function applyManualTheme(){
+    applyTheme(Color.hexToHsl(CONFIG.theme.base).slice(0, 2), Color.hexToHsl(CONFIG.theme.accent).slice(0, 2));
+}
+
+/* ---- 套用設定 ---- */
+(function applyConfig(){
+    const r = document.documentElement.style;
+    applyManualTheme();
+    document.title = T.selectTitle;
+    $("selectTitle").textContent = T.selectTitle;
+    $("selectSub").textContent = T.selectSub;
+    $("modalTitle").textContent = T.confirmTitle;
+    $("modalText").textContent = T.confirmText;
+    $("baseImage").src = CONFIG.image;
+
+    const a = CONFIG.scratchArea;
+    for(const el of [$("prizeLayer"), $("scratchCanvas")]){
+        el.style.left = a.x + "%"; el.style.top = a.y + "%";
+        el.style.width = a.w + "%"; el.style.height = a.h + "%";
+    }
+    $("muteBtn").textContent = CONFIG.sound ? "🔊" : "🔇";
+})();
+
+/* ---- 音效（Web Audio，免音檔） ---- */
+const Sound = {
+    ctx:null, on:CONFIG.sound, gain:null, timer:null,
+    init(){
+        if(this.ctx || !window.AudioContext) return;
+        const c = this.ctx = new AudioContext();
+        const buf = c.createBuffer(1, c.sampleRate, c.sampleRate);
+        const d = buf.getChannelData(0);
+        for(let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        const src = c.createBufferSource(); src.buffer = buf; src.loop = true;
+        const f = c.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 2800; f.Q.value = .7;
+        this.gain = c.createGain(); this.gain.gain.value = 0;
+        src.connect(f); f.connect(this.gain); this.gain.connect(c.destination); src.start();
+    },
+    scratch(speed){
+        if(!this.on || !this.ctx) return;
+        this.gain.gain.setTargetAtTime(Math.min(.22, speed * .015), this.ctx.currentTime, .02);
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => this.stop(), 80);
+    },
+    stop(){ if(this.ctx) this.gain.gain.setTargetAtTime(0, this.ctx.currentTime, .03); },
+    tone(freqs, step = .09, type = "triangle", vol = .18){
+        if(!this.on || !this.ctx) return;
+        freqs.forEach((hz, i) => {
+            const t = this.ctx.currentTime + i * step;
+            const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+            o.type = type; o.frequency.value = hz;
+            g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.001, t + .35);
+            o.connect(g); g.connect(this.ctx.destination); o.start(t); o.stop(t + .4);
+        });
+    },
+    win(){ this.tone([523, 659, 784, 1047, 1319], .1) },
+    lose(){ this.tone([392, 330], .18, "sine", .12) }
+};
+$("muteBtn").addEventListener("click", () => {
+    Sound.on = !Sound.on;
+    $("muteBtn").textContent = Sound.on ? "🔊" : "🔇";
+    if(!Sound.on) Sound.stop();
+});
+const vibrate = p => navigator.vibrate && navigator.vibrate(p);
+
+/* ---- 特效層：背景金粉 + 刮除火花 + 彩帶 ---- */
+const FX = (() => {
+    const cv = $("fx"), ctx = cv.getContext("2d");
+    let W = 0, H = 0, dpr = 1;
+    const motes = [], parts = [];
+    function resize(){
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = innerWidth; H = innerHeight;
+        cv.width = W * dpr; cv.height = H * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize(); addEventListener("resize", resize);
+
+    const mote = (y) => ({
+        x:Math.random() * W, y:y ?? Math.random() * H,
+        r:Math.random() * 2 + .6, v:Math.random() * .35 + .1, p:Math.random() * 6.28
+    });
+    if(!reduceMotion) for(let i = 0; i < 45; i++) motes.push(mote());
+
+    function sparkle(x, y){
+        for(let i = 0; i < 2; i++) parts.push({
+            kind:"spark", x, y, vx:(Math.random() - .5) * 3, vy:(Math.random() - 1.2) * 2.2,
+            life:1, decay:.035 + Math.random() * .03, r:Math.random() * 2.2 + 1, g:.08
+        });
+    }
+    function confetti(n = 140){
+        if(reduceMotion) n = 30;
+        const cols = THEME.confetti;
+        for(let i = 0; i < n; i++){
+            const left = i % 2, ang = (left ? -1 : 1) * (Math.random() * .6 + .2) - Math.PI / 2;
+            const sp = Math.random() * 13 + 8;
+            parts.push({
+                kind:"conf", x:left ? W : 0, y:H * .75,
+                vx:Math.cos(ang) * sp * (left ? -1 : 1) * -1, vy:Math.sin(ang) * sp,
+                w:Math.random() * 8 + 5, h:Math.random() * 5 + 3, rot:Math.random() * 6.28,
+                vr:(Math.random() - .5) * .35, color:cols[i % cols.length],
+                life:1, decay:.004 + Math.random() * .004, g:.28
+            });
+        }
+    }
+    function frame(t){
+        ctx.clearRect(0, 0, W, H);
+        for(const m of motes){
+            m.y -= m.v; m.x += Math.sin(t / 1200 + m.p) * .25;
+            if(m.y < -5) Object.assign(m, mote(H + 5));
+            ctx.globalAlpha = .25 + .25 * Math.sin(t / 700 + m.p);
+            ctx.fillStyle = THEME.gold;
+            ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, 6.28); ctx.fill();
+        }
+        for(let i = parts.length - 1; i >= 0; i--){
+            const p = parts[i];
+            p.vy += p.g; p.x += p.vx; p.y += p.vy; p.life -= p.decay;
+            if(p.kind === "conf"){ p.vx *= .985; p.vy *= .985; p.rot += p.vr; }
+            if(p.life <= 0 || p.y > H + 30){ parts.splice(i, 1); continue; }
+            ctx.globalAlpha = Math.min(1, p.life * 1.5);
+            if(p.kind === "spark"){
+                ctx.fillStyle = THEME.goldLight;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.28); ctx.fill();
+            }else{
+                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+                ctx.fillStyle = p.color; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+            }
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+    return { sparkle, confetti };
+})();
+
+/* ---- 狀態 ---- */
+let selectedCard = null, selectedIndex = -1, locked = false;
+const cardGrid = $("cardGrid");
+
+/* ---- 建立卡片（含 3D 傾斜） ---- */
+const loadImg = src => new Promise((ok, no) => {
+    const im = new Image();
+    im.onload = () => ok(im);
+    im.onerror = () => no(new Error("圖片載入失敗：" + src));
+    im.src = src;
+});
+
+/* 銀漆圖：依底圖比例用程式生成一次，選卡頁與刮除層共用，確保外觀一致 */
+let silverURL = "", silverImg = null;
+async function buildSilver(base){
+    const a = CONFIG.scratchArea, w = 600;
+    const h = Math.round(w * (a.h * base.naturalHeight) / (a.w * base.naturalWidth));
+    const cv = document.createElement("canvas");
+    cv.width = w; cv.height = h;
+    paintSilver(cv.getContext("2d"), w, h);
+    silverURL = cv.toDataURL("image/png");
+    silverImg = await loadImg(silverURL);
+}
+
+/* 一張完整卡面 = 底圖 + 銀漆層 */
+function makeFace(){
+    const a = CONFIG.scratchArea, d = document.createElement("div");
+    d.className = "face";
+    d.innerHTML = `<img src="${CONFIG.image}" alt="" draggable="false"><div class="silver-cover${CONFIG.debugArea ? " debug" : ""}"></div>`;
+    const s = d.lastElementChild.style;
+    s.left = a.x + "%"; s.top = a.y + "%"; s.width = a.w + "%"; s.height = a.h + "%";
+    s.backgroundImage = `url(${silverURL})`;
+    return d;
+}
+
+let baseAspect = 1;   // 底圖 高/寬
+
+function buildCards(){
+    const F = CONFIG.fan, n = CONFIG.cardCount;
+    cardGrid.style.setProperty("--radius", F.radius);
+    const cards = [];
+
+    /* 依容器寬度算出卡片大小與每張牌的位置，保證扇形完整落在畫面內（不會出現橫向卷軸） */
+    function layout(){
+        const R = F.radius, th = F.spread / 2 * Math.PI / 180, hh = baseAspect;   // 以 cw=1 為單位
+        const pts = [];
+        for(const phi of [-th, 0, th]){
+            const c = Math.cos(phi), s = Math.sin(phi), lift = phi === 0 ? F.lift * hh : 0;
+            for(const x of [-.5, .5]) for(const y of [R, R + hh + lift]){
+                pts.push([x * c + y * s, -x * s + y * c]);        // 順時針旋轉（y 向上）
+            }
+        }
+        const minX = Math.min(...pts.map(p => p[0])), maxX = Math.max(...pts.map(p => p[0]));
+        const minY = Math.min(...pts.map(p => p[1])), maxY = Math.max(...pts.map(p => p[1]));
+        const W = cardGrid.clientWidth;
+        const cw = Math.min(F.maxCardWidth, W / (maxX - minX) * .96);
+        const px = W / 2 - (minX + maxX) / 2 * cw;               // 旋轉中心（螢幕座標）
+        const py = maxY * cw;
+        cardGrid.style.height = Math.ceil((maxY - minY) * cw) + "px";
+        cardGrid.style.setProperty("--cw", cw + "px");
+        cards.forEach(c => {
+            c.style.width = cw + "px";
+            c.style.left = (px - cw / 2) + "px";
+            c.style.top = (py - (R * cw + hh * cw)) + "px";
+        });
+    }
+
+    for(let i = 0; i < n; i++){
+        const card = document.createElement("div");
+        card.className = "card";
+        const t = n === 1 ? 0 : i / (n - 1) - .5;                 // -0.5 ~ 0.5
+        card.style.setProperty("--i", i);
+        card.style.setProperty("--ang", (t * F.spread) + "deg");
+        card.style.setProperty("--z", i + 1);                     // 右邊壓左邊，像握在手上的牌
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", "刮刮卡 " + (i + 1));
+        card.innerHTML = `<div class="tilt"></div>`;
+        card.firstElementChild.appendChild(makeFace());
+        cardGrid.appendChild(card);
+        cards.push(card);
+    }
+
+    layout();
+    addEventListener("resize", layout);
+
+    /* ---- 手指/滑鼠左右滑動：依位置抬起對應的牌（鄰牌微微跟著抬） ---- */
+    let active = -1, down = false, moved = false, downX = 0, downIdx = -1;
+
+    function setLift(center){
+        cards.forEach((c, i) => {
+            const d = center < 0 ? 99 : Math.abs(i - center);
+            const up = d === 0 ? F.lift : d === 1 ? F.lift * F.neighbor * .5 : 0;   // 鄰牌微微跟著抬
+            c.style.setProperty("--up", up.toFixed(3));
+            c.style.setProperty("--z", d === 0 ? 100 : i + 1);
+            c.classList.toggle("up", d === 0);
+        });
+    }
+
+    // 依指標 x 位置換算成最接近的牌（以每張牌的視覺中心為準，考慮扇形弧度）
+    function indexAt(clientX){
+        let best = -1, bestD = Infinity;
+        cards.forEach((c, i) => {
+            const r = c.firstElementChild.getBoundingClientRect();
+            const cx = r.left + r.width / 2;
+            const d = Math.abs(clientX - cx);
+            if(d < bestD){ bestD = d; best = i; }
+        });
+        return best;
+    }
+
+    function track(e){
+        if(locked) return;
+        const i = indexAt(e.clientX);
+        if(i !== active){
+            active = i;
+            setLift(i);
+            if(i >= 0 && (down || e.pointerType === "mouse")) vibrate(6);
+        }
+    }
+
+    cardGrid.addEventListener("pointerdown", e => {
+        if(locked) return;
+        down = true; moved = false; downX = e.clientX;
+        cardGrid.setPointerCapture(e.pointerId);
+        downIdx = indexAt(e.clientX);
+        track(e);
+    });
+    cardGrid.addEventListener("pointermove", e => {
+        if(Math.abs(e.clientX - downX) > 8) moved = true;
+        if(down || e.pointerType === "mouse") track(e);   // 滑鼠不按也會跟著抬
+    });
+    cardGrid.addEventListener("pointerup", e => {
+        if(locked || !down) return;
+        down = false;
+        // 沒有明顯滑動 = 點選；有滑動 = 只是在挑牌，放開後保持抬起，再點一次才選
+        if(!moved && active >= 0){
+            choose(active);
+        }else if(e.pointerType === "touch"){
+            // 手機：放開後保留抬起的牌，讓使用者再點一下確認
+        }
+    });
+    cardGrid.addEventListener("pointercancel", () => { down = false; });
+    cardGrid.addEventListener("pointerleave", e => {
+        if(down || e.pointerType !== "mouse") return;
+        active = -1; setLift(-1);
+    });
+
+    function choose(i){
+        selectedCard = cards[i]; selectedIndex = i;
+        $("confirmModal").classList.remove("hidden");
+        $("confirmBtn").focus();
+    }
+}
+
+(async () => {
+    try{
+        const base = await loadImg(CONFIG.image);
+        baseAspect = base.naturalHeight / base.naturalWidth;
+        if(CONFIG.theme.mode === "auto"){
+            try{
+                const t = extractTheme(base);
+                applyTheme(t.base, t.acc);
+                console.info("[theme] 自動取色 base:", Color.hex(Color.hsl(t.base[0], t.base[1], .35)),
+                             "accent:", Color.hex(Color.hsl(t.acc[0], t.acc[1], .6)));
+            }catch(e){
+                console.warn("[theme] 無法讀取圖片像素，改用 manual 顏色（file:// 開啟時屬正常）", e);
+            }
+        }
+        await buildSilver(base);
+        buildCards();
+    }catch(err){
+        console.error(err);
+        toast(err.message);
+    }
+})();
+
+/* ---- Modal ---- */
+$("cancelBtn").addEventListener("click", () => $("confirmModal").classList.add("hidden"));
+
+$("confirmBtn").addEventListener("click", async () => {
+    const btn = $("confirmBtn");
+    if(locked) return;
+    locked = true; btn.disabled = true; btn.textContent = "確定";
+    Sound.init(); vibrate(15);               // 需在使用者點擊時建立音訊
+
+    let result;
+    try{
+        result = await drawPrize(selectedIndex);   // ← 向後端取得結果
+    }catch(err){
+        console.error(err);
+        locked = false; btn.disabled = false; btn.textContent = "確定";
+        $("confirmModal").classList.add("hidden");
+        toast(T.errorTip);
+        return;
+    }
+
+    $("confirmModal").classList.add("hidden");
+    btn.disabled = false; btn.textContent = "確定";
+    $("gameTitle").textContent = T.playTitle;
+    $("tip").textContent = T.tip;
+    renderPrize(result);
+
+    await playSelectAnimation();
+    requestAnimationFrame(() => initScratch(result));
+});
+
+function renderPrize(result){
+    const layer = $("prizeLayer");
+    const win = result.win !== false;
+    layer.innerHTML = "";
+    const small = document.createElement("div");
+    small.className = "small"; small.textContent = win ? T.winLabel : T.loseLabel;
+    const name = document.createElement("div");
+    name.className = "name"; name.textContent = win ? (result.prize?.name ?? "") : T.loseTitle;
+    layer.append(small, name);
+    if(win && result.prize?.desc){
+        const d = document.createElement("div");
+        d.className = "small"; d.style.letterSpacing = ".1em"; d.style.marginTop = "6px";
+        d.textContent = result.prize.desc; layer.appendChild(d);
+    }
+}
+
+/* ---- 選卡放大動畫（FLIP） ---- */
+async function playSelectAnimation(){
+    document.querySelectorAll(".card").forEach(c => { if(c !== selectedCard) c.classList.add("fade"); });
+
+    const wrapper = $("scratchWrapper"), baseImage = $("baseImage");
+    if(!baseImage.complete || !baseImage.naturalWidth){
+        await new Promise((ok, no) => {
+            baseImage.addEventListener("load", ok, { once:true });
+            baseImage.addEventListener("error", no, { once:true });
+        });
+    }
+
+    const tiltEl = selectedCard.firstElementChild;
+    const rr = tiltEl.getBoundingClientRect();
+    const w0 = tiltEl.offsetWidth, h0 = tiltEl.offsetHeight;           // 未旋轉的實際尺寸
+    const start = {                                                    // 以旋轉後的中心點為起點
+        left:rr.left + rr.width / 2 - w0 / 2, top:rr.top + rr.height / 2 - h0 / 2,
+        width:w0, height:h0
+    };
+    $("selectPage").classList.add("hidden");
+    $("gamePage").classList.remove("hidden");
+    const target = wrapper.getBoundingClientRect();
+
+    const clone = document.createElement("div");
+    clone.className = "zoom-card";
+    clone.appendChild(makeFace());
+    Object.assign(clone.style, {
+        left:start.left + "px", top:start.top + "px",
+        width:start.width + "px", height:start.height + "px"
+    });
+    document.body.appendChild(clone);
+    selectedCard.classList.add("selected-origin");
+
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const dur = reduceMotion ? 1 : 850, ease = "cubic-bezier(.2,.8,.2,1)";
+    clone.style.transition = ["left", "top", "width", "height"].map(p => `${p} ${dur}ms ${ease}`).join(",");
+    Object.assign(clone.style, {
+        left:target.left + "px", top:target.top + "px",
+        width:target.width + "px", height:target.height + "px"
+    });
+    await sleep(dur + 50);
+
+    clone.remove();
+    wrapper.classList.remove("transition-hidden");
+}
+
+/* ---- 刮刮卡 ---- */
+function initScratch(result){
+    const canvas = $("scratchCanvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently:true });
+    const rect = canvas.getBoundingClientRect();
+    const width = rect.width, height = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    ctx.drawImage(silverImg, 0, 0, width, height);
+
+    let drawing = false, lastX = 0, lastY = 0, revealed = false, lastCheck = 0;
+
+    const getPos = e => {
+        const b = canvas.getBoundingClientRect();
+        return { x:(e.clientX - b.left) * (width / b.width), y:(e.clientY - b.top) * (height / b.height) };
+    };
+
+    function erase(x, y){
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineCap = ctx.lineJoin = "round";
+        ctx.lineWidth = CONFIG.brushSize;
+        ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, CONFIG.brushSize / 2, 0, 6.28); ctx.fill();
+        const speed = Math.hypot(x - lastX, y - lastY);
+        lastX = x; lastY = y;
+        return speed;
+    }
+
+    function ratio(){
+        const d = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let clear = 0, total = 0;
+        for(let i = 3; i < d.length; i += 16){ total++; if(d[i] < 16) clear++; }  // 取樣加速
+        return clear / total;
+    }
+
+    function check(force){
+        if(revealed) return;
+        const now = performance.now();
+        if(!force && now - lastCheck < 120) return;
+        lastCheck = now;
+        const r = ratio();
+        $("progressBar").style.width = Math.min(100, r / CONFIG.revealRatio * 100) + "%";
+        if(r >= CONFIG.revealRatio) finish();
+    }
+
+    function finish(){
+        revealed = true; drawing = false; Sound.stop();
+        $("progressBar").style.width = "100%";
+        canvas.classList.add("gone");
+        const win = result.win !== false;
+        $("prizeLayer").classList.add("show");
+        $("tip").textContent = "";
+        $("gameTitle").textContent = win ? T.winTitle : T.loseTitle;
+        $("againBtn").classList.remove("hidden");
+        if(win){
+            $("gameTitle").classList.add("win");
+            $("scratchWrapper").classList.add("glow");
+            FX.confetti(); setTimeout(() => FX.confetti(70), 450);
+            Sound.win(); vibrate([30, 40, 60]);
+        }else{
+            Sound.lose();
+        }
+        reportRevealed(result);       // ← 通知後端已刮開
+    }
+
+    canvas.addEventListener("pointerdown", e => {
+        if(revealed) return;
+        e.preventDefault();
+        drawing = true; canvas.setPointerCapture(e.pointerId);
+        const p = getPos(e); lastX = p.x; lastY = p.y;
+        erase(p.x, p.y); FX.sparkle(e.clientX, e.clientY);
+    });
+    canvas.addEventListener("pointermove", e => {
+        if(!drawing || revealed) return;
+        const p = getPos(e);
+        const speed = erase(p.x, p.y);
+        Sound.scratch(speed);
+        FX.sparkle(e.clientX, e.clientY);
+        check(false);
+    });
+    const stop = () => { if(!drawing) return; drawing = false; Sound.stop(); check(true); };
+    canvas.addEventListener("pointerup", stop);
+    canvas.addEventListener("pointercancel", stop);
+}
+
+/* 銀漆：金屬漸層 + 細紋 + 顆粒 + 文字 */
+function paintSilver(ctx, w, h){
+    const g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, "#f2f2f2"); g.addColorStop(.35, "#b9bcc2");
+    g.addColorStop(.6, "#e9eaec"); g.addColorStop(1, "#a9acb2");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1;
+    for(let x = -h; x < w; x += 9){
+        ctx.beginPath(); ctx.moveTo(x, h); ctx.lineTo(x + h, 0); ctx.stroke();
+    }
+    for(let i = 0; i < w * h / 12; i++){
+        ctx.fillStyle = Math.random() > .5 ? "rgba(255,255,255,.35)" : "rgba(0,0,0,.12)";
+        ctx.fillRect(Math.random() * w, Math.random() * h, 1.4, 1.4);
+    }
+    ctx.fillStyle = "rgba(70,72,78,.85)";
+    ctx.font = `900 ${Math.max(18, w * .075)}px "Noto Sans TC","Microsoft JhengHei",sans-serif`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(CONFIG.silver.text, w / 2, h / 2);
+
+    ctx.lineWidth = 3;                        // 立體斜邊
+    ctx.strokeStyle = "rgba(255,255,255,.7)";
+    ctx.beginPath(); ctx.moveTo(1.5, h); ctx.lineTo(1.5, 1.5); ctx.lineTo(w, 1.5); ctx.stroke();
+    ctx.strokeStyle = "rgba(0,0,0,.25)";
+    ctx.beginPath(); ctx.moveTo(w - 1.5, 0); ctx.lineTo(w - 1.5, h - 1.5); ctx.lineTo(0, h - 1.5); ctx.stroke();
+}
+
+/* ---- 其他 ---- */
+function toast(msg){
+    const t = $("toast");
+    t.textContent = msg; t.classList.remove("hidden");
+    clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.add("hidden"), 3500);
+}
+$("againBtn").addEventListener("click", () => location.reload());
+</script>
+</body>
+</html>
